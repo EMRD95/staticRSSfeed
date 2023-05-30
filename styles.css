@@ -142,3 +142,48 @@ h1 {
     padding: 6px 12px;
   }
 }
+
+/* Mobile Styles */
+@media (max-width: 425px) {
+  .container {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .article {
+    margin-bottom: 20px;
+    padding: 15px;
+  }
+
+  .article h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .article p {
+    font-size: 12px;
+    margin-bottom: 3px;
+  }
+
+  .article .description {
+    font-size: 14px;
+  }
+
+  .article .read-more {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .github-link {
+    margin-top: 15px;
+  }
+}
