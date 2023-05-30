@@ -34,10 +34,16 @@ function truncateDescription(description) {
 function saveArticlesToLocalStorage(articles) {
   const cachedArticles = localStorage.getItem(storageKey);
   const existingArticles = cachedArticles ? JSON.parse(cachedArticles) : [];
-  const updatedArticles = [...existingArticles, ...articles];
-  localStorage.setItem(storageKey, JSON.stringify(updatedArticles));
-}
+  
+  // Add favicon URL to each article
+  const updatedArticles = articles.map(article => ({
+    ...article,
+    faviconUrl: `https://www.google.com/s2/favicons?domain=${article.link}`
+  }));
 
+  const updatedCachedArticles = [...existingArticles, ...updatedArticles];
+  localStorage.setItem(storageKey, JSON.stringify(updatedCachedArticles));
+}
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   // Transform keywords to lowercase
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
@@ -83,6 +89,14 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
       filteredArticles.forEach(article => {
         const articleElement = document.createElement('div');
         articleElement.classList.add('article');
+
+        // Create favicon element
+        const faviconElement = document.createElement('img');
+        faviconElement.classList.add('favicon');
+        faviconElement.src = `https://www.google.com/s2/favicons?domain=${article.link}`;
+
+        // Append favicon to the article element
+        articleElement.appendChild(faviconElement);
 
         const titleElement = document.createElement('h2');
         titleElement.textContent = article.title;
@@ -144,6 +158,14 @@ function refreshArticlesIfNeeded(feedUrls, allKeywords, someKeywords, noKeywords
     cachedArticles.forEach(article => {
       const articleElement = document.createElement('div');
       articleElement.classList.add('article');
+
+      // Create favicon element
+      const faviconElement = document.createElement('img');
+      faviconElement.classList.add('favicon');
+      faviconElement.src = article.faviconUrl;
+
+      // Append favicon to the article element
+      articleElement.appendChild(faviconElement);
 
       const titleElement = document.createElement('h2');
       titleElement.textContent = article.title;

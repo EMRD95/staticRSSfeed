@@ -86,6 +86,43 @@ h1 {
   color: #add8e6;
 }
 
+.subtitle {
+  text-align: center; /* Centrer le sous-titre */
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.github-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  margin-top: 20px;
+}
+
+.github-link svg {
+  margin-right: 8px;
+}
+
+.article {
+  position: relative;
+}
+
+.favicon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  margin: 8px;
+}
+
+
+
+
+
 
 @media (max-width: 768px) {
   h1 {
