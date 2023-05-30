@@ -1,49 +1,50 @@
 # staticRSSfeed
-Static RSS feed website with sorting options
+A simple and efficient website for viewing RSS feeds with sorting options
 
 https://emrd95.github.io/staticRSSfeed/
 
 ## Description
 
-The Static RSS Feed project is a web application that fetches RSS feeds from multiple sources, filters the articles based on keywords, and displays them in a user-friendly format. It utilizes JavaScript and the RSS2JSON API to retrieve and process the RSS feeds.
+The Static RSS Feed is a light, streamlined web application that utilizes JavaScript to fetch and sort RSS feeds from multiple sources based on user-defined keywords. It leverages the RSS2JSON API for the feed retrieval and parsing process, delivering a pleasant and accessible viewing experience.
 
 ![image](https://github.com/EMRD95/staticRSSfeed/assets/114953576/08fde741-f08a-494f-8ffb-453151d2b194)
 
+> Please note that this application uses the free tier of the RSS2JSON API, which comes with certain usage limitations. If you want to lift these limitations, you can opt for a paid plan and manage the API keys securely on your server-side setup.
 
 ## Setup Instructions
 
-To set up this project for your own use and deploy it as a GitHub Pages site, follow these steps:
+To deploy this project as a GitHub Pages site, follow these steps:
 
-1. **Fork the Project**: Fork the [Static RSS Feed](https://github.com/EMRD95/staticRSSfeed) repository by clicking the "Fork" button at the top right corner of the GitHub page. This creates a copy of the project in your GitHub account.
+1. **Fork the Project**: Fork the [Static RSS Feed](https://github.com/EMRD95/staticRSSfeed) repository via the "Fork" button located on the top right corner of the GitHub page, creating a replica of the project within your account.
 
-2. **Clone the Repository**: After forking, clone the repository to your local machine using Git. Open your terminal and run the following command:
+2. **Clone the Repository**: Upon forking, clone the repository onto your local machine using Git. Open the terminal and execute the command:
    ```
    git clone https://github.com/your-username/staticRSSfeed.git
    ```
 
-3. **Modify the JSON Configuration File**: Open the `config.json` file in the project directory. Customize the configuration according to your preferences. You can update the RSS feed URLs, keywords, and other settings to tailor the articles displayed.
+3. **Modify the JSON Configuration File**: Within the project directory, locate and open the `config.json` file. Adjust the configuration settings to align with your requirements, such as updating the RSS feed URLs, keywords, among others.
 
-4. **Activate GitHub Pages**: Go to the forked repository on GitHub. Click on the "Settings" tab at the top of the repository page. Scroll down to the "GitHub Pages" section. Under the "Source" dropdown, select the branch you want to use for GitHub Pages (typically "main" or "master"). Click the "Save" button. This activates GitHub Pages for your repository.
+4. **Activate GitHub Pages**: Navigate to the forked repository on GitHub and click on the "Settings" tab. Scroll down to the "GitHub Pages" section, select your preferred branch under the "Source" dropdown menu (usually "main" or "master"), and save your changes. This action will enable GitHub Pages for your repository.
 
-5. **Access the Deployed Site**: Once GitHub Pages is enabled, you can access your deployed site at `https://your-username.github.io/staticRSSfeed`. It may take a few moments for the changes to propagate and the site to become accessible.
+5. **Access the Deployed Site**: After enabling GitHub Pages, your site will be accessible via `https://your-username.github.io/staticRSSfeed`. It might take a short while for the changes to propagate and your site to be accessible.
 
 ## Usage
 
-- The web application will fetch the RSS feeds based on the configured URLs and keywords.
-- It will filter the articles based on the keywords and display them in a user-friendly format.
-- Users can click on the article links to read the full articles.
+- The application fetches RSS feeds based on your predefined URLs and keywords.
+- It filters the fetched articles as per the keywords, presenting them in a friendly format.
+- Clicking on the article links redirects to the original source for full reading.
 
 ## Contributing
 
-Contributions are welcome! If you have any suggestions, improvements, or bug fixes, please open an issue or submit a pull request in the [Static RSS Feed](https://github.com/EMRD95/staticRSSfeed) repository.
+Your contributions are always welcome! If you wish to suggest enhancements, report bugs, or make general improvements, feel free to open an issue or submit a pull request on the [Static RSS Feed](https://github.com/EMRD95/staticRSSfeed) repository.
 
 ## License
 
-The Static RSS Feed project is licensed under the [MIT License](LICENSE). Feel free to use and modify the project as per the terms of the license.
+Static RSS Feed is available under the [MIT License](LICENSE). You are free to use and modify the project under the terms stipulated in the license.
 
 ## Acknowledgements
 
-This project makes use of the following technologies and resources:
+Our project benefits from the following technologies and resources:
 
 - [RSS2JSON API](https://rss2json.com/)
 - [GitHub Pages](https://pages.github.com/)
