@@ -82,6 +82,11 @@ h1 {
   box-shadow: 0 0 0 3px #fff, 0 0 0 6px #444;
 }
 
+.article-link {
+  color: #add8e6;
+}
+
+
 @media (max-width: 768px) {
   h1 {
     font-size: 30px;

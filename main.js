@@ -1,6 +1,7 @@
 const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=';
 const jsonConfigUrl = 'config.json';
 const maxDescriptionLength = 800;
+const storageKey = 'cachedArticles';
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -14,15 +15,14 @@ function sanitizeHTML(htmlString) {
   // Get the text content of the HTML string
   let textContent = tempElement.textContent || tempElement.innerText || '';
 
-  // Remove all tags
-  textContent = textContent.replace(/Tags: \w+/g, '');
+  // Remove all tags and categories, both with and without spaces after the colon
+  textContent = textContent.replace(/(Tags:|Categories:)\s*\w+(\s*(Tags:|Categories:)\s*\w+)*/g, '');
 
-  // Remove all categories
-  textContent = textContent.replace(/Categories: \w+/g, '');
+  // Remove "Source: thehackernews.com – Author: ."
+  textContent = textContent.replace('Source: thehackernews.com – Author: .', '');
 
   return textContent;
 }
-
 
 function truncateDescription(description) {
   if (description.length > maxDescriptionLength) {
@@ -31,12 +31,33 @@ function truncateDescription(description) {
   return description;
 }
 
-function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
-  const promises = feedUrls.map(url => fetch(apiUrl + encodeURIComponent(url)).then(response => response.json()));
+function saveArticlesToLocalStorage(articles) {
+  const cachedArticles = localStorage.getItem(storageKey);
+  const existingArticles = cachedArticles ? JSON.parse(cachedArticles) : [];
+  const updatedArticles = [...existingArticles, ...articles];
+  localStorage.setItem(storageKey, JSON.stringify(updatedArticles));
+}
 
-  Promise.all(promises)
+function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
+  // Transform keywords to lowercase
+  allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
+  someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
+  noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
+
+  const promises = feedUrls.map(url =>
+    fetch(apiUrl + encodeURIComponent(url)).then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+  );
+
+  Promise.allSettled(promises)
     .then(results => {
-      const articles = results.flatMap(result => result.items);
+      const articles = results.flatMap(result =>
+        result.status === 'fulfilled' ? result.value.items : []
+      );
       articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
       const filteredArticles = articles.filter(article => {
@@ -54,6 +75,8 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
         return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
       });
 
+      saveArticlesToLocalStorage(filteredArticles);
+
       const articlesContainer = document.getElementById('articles');
       articlesContainer.innerHTML = '';
 
@@ -65,7 +88,9 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
         titleElement.textContent = article.title;
 
         const sourceElement = document.createElement('p');
-        sourceElement.textContent = `Source: ${article.author || article.creator}`;
+        if (article.author || article.creator) {
+          sourceElement.textContent = `Source: ${article.author || article.creator}`;
+        }
 
         const dateElement = document.createElement('p');
         dateElement.textContent = formatDate(article.pubDate);
@@ -76,7 +101,11 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
 
         const linkElement = document.createElement('a');
         linkElement.href = article.link;
-        linkElement.textContent = 'Read More';
+        linkElement.classList.add('article-link');
+
+        // Extract the domain from the URL
+        const url = new URL(article.link);
+        linkElement.textContent = url.hostname; // Use hostname as link text
 
         articleElement.appendChild(titleElement);
         articleElement.appendChild(sourceElement);
@@ -90,8 +119,65 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
     .catch(error => console.error(error));
 }
 
+function loadArticlesFromLocalStorage() {
+  const cachedArticles = localStorage.getItem(storageKey);
+  return cachedArticles ? JSON.parse(cachedArticles) : [];
+}
 
+function shouldRefreshArticles(lastRefreshTimestamp) {
+  const currentTime = new Date().getTime();
+  const oneHourInMilliseconds = 60 * 60 * 1000;
+  return currentTime - lastRefreshTimestamp >= oneHourInMilliseconds;
+}
 
+function refreshArticlesIfNeeded(feedUrls, allKeywords, someKeywords, noKeywords) {
+  const lastRefreshTimestamp = localStorage.getItem('lastRefreshTimestamp');
+
+  if (!lastRefreshTimestamp || shouldRefreshArticles(Number(lastRefreshTimestamp))) {
+    localStorage.setItem('lastRefreshTimestamp', new Date().getTime().toString());
+    fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
+  } else {
+    const cachedArticles = loadArticlesFromLocalStorage();
+    const articlesContainer = document.getElementById('articles');
+    articlesContainer.innerHTML = '';
+
+    cachedArticles.forEach(article => {
+      const articleElement = document.createElement('div');
+      articleElement.classList.add('article');
+
+      const titleElement = document.createElement('h2');
+      titleElement.textContent = article.title;
+
+      const sourceElement = document.createElement('p');
+      if (article.author || article.creator) {
+        sourceElement.textContent = `Source: ${article.author || article.creator}`;
+      }
+
+      const dateElement = document.createElement('p');
+      dateElement.textContent = formatDate(article.pubDate);
+
+      const descriptionElement = document.createElement('p');
+      const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
+      descriptionElement.textContent = truncateDescription(sanitizedDescription);
+
+      const linkElement = document.createElement('a');
+      linkElement.href = article.link;
+      linkElement.classList.add('article-link');
+
+      // Extract the domain from the URL
+      const url = new URL(article.link);
+      linkElement.textContent = url.hostname; // Use hostname as link text
+
+      articleElement.appendChild(titleElement);
+      articleElement.appendChild(sourceElement);
+      articleElement.appendChild(dateElement);
+      articleElement.appendChild(descriptionElement);
+      articleElement.appendChild(linkElement);
+
+      articlesContainer.appendChild(articleElement);
+    });
+  }
+}
 
 function loadConfig() {
   fetch(jsonConfigUrl)
@@ -101,10 +187,9 @@ function loadConfig() {
       const allKeywords = data.allKeywords || [];
       const someKeywords = data.someKeywords || [];
       const noKeywords = data.noKeywords || [];
-      fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
+      refreshArticlesIfNeeded(feedUrls, allKeywords, someKeywords, noKeywords);
     })
     .catch(error => console.error(error));
 }
-
 
 loadConfig();
