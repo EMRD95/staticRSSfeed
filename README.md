@@ -11,8 +11,6 @@ Please note, the default configuration is set to fetch AI and cybersecurity-rela
 
 ![image](https://github.com/EMRD95/staticRSSfeed/assets/114953576/08fde741-f08a-494f-8ffb-453151d2b194)
 
-> **Important**: This application uses the free tier of the RSS2JSON API, which includes certain usage limitations. If you require a higher capacity, you could opt for a paid plan from RSS2JSON and manage the API keys securely on your server-side environment.
-
 > Please note that this application uses the free tier of the RSS2JSON API, which comes with certain usage limitations. If you want to lift these limitations, you can opt for a paid plan and manage the API keys securely on your server-side setup.
 
 ## Setup Instructions
