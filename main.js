@@ -67,16 +67,17 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
       articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
       const filteredArticles = articles.filter(article => {
+        const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
         const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
 
-        // All keywords must be included in the article
-        const allKeywordsIncluded = allKeywords.every(keyword => description.includes(keyword));
+        // All keywords must be included in the article's title or description
+        const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
 
-        // At least one keyword must be included in the article
-        const someKeywordsIncluded = someKeywords.some(keyword => description.includes(keyword));
+        // At least one keyword must be included in the article's title or description
+        const someKeywordsIncluded = someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
 
-        // None of the keywords in this list should be included in the article
-        const noKeywordsIncluded = noKeywords.some(keyword => description.includes(keyword));
+        // None of the keywords in this list should be included in the article's title or description
+        const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
 
         return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
       });
