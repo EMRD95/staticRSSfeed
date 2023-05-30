@@ -5,9 +5,9 @@ https://emrd95.github.io/staticRSSfeed/
 
 ## Description
 
-Static RSS Feed is a nimble web application, specifically configured in this instance to fetch and sort news related to the dynamic field of artificial intelligence (AI) and its significant impact on cybersecurity. The application utilizes JavaScript and leverages the RSS2JSON API for retrieving and parsing these RSS feeds, ensuring a user-friendly and insightful viewing experience.
+The Static RSS Feed is a light static website that utilizes JavaScript to fetch and sort RSS feeds from multiple sources based on user-defined keywords. It leverages the RSS2JSON API for the feed retrieval and parsing process, delivering a pleasant and accessible viewing experience.
 
-Please note, the default configuration is set to fetch AI and cybersecurity-related content. However, you can easily change this to suit your interests by modifying the `config.json` file.
+The default configuration is set to fetch AI and cybersecurity-related content. However, you can easily change this to suit your interests by modifying the `config.json` file.
 
 ![image](https://github.com/EMRD95/staticRSSfeed/assets/114953576/08fde741-f08a-494f-8ffb-453151d2b194)
 
