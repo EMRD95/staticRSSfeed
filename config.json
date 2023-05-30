@@ -1,0 +1,30 @@
+{
+  "feedUrls": [
+    "https://www.zerodayinitiative.com/rss/published/",
+    "https://www.darkreading.com/rss.xml",
+    "https://www.bleepingcomputer.com/feed/",
+    "https://feeds.feedburner.com/TheHackersNews",
+    "https://www.theregister.com/security/headlines.atom",
+    "https://krebsonsecurity.com/feed/",
+    "https://www.cisa.gov/uscert/ncas/current-activity.xml",
+    "https://blog.knowbe4.com/rss.xml",
+    "https://threatpost.com/feed/",
+    "https://feeds.feedburner.com/TroyHunt",
+    "https://www.malwarebytes.com/blog/feed/index.xml",
+    "https://feeds.feedburner.com/grahamcluley",
+    "https://www.microsoft.com/security/blog/feed/",
+    "https://portswigger.net/daily-swig/rss",
+    "http://feeds.feedburner.com/NakedSecurity",
+    "https://www.tenable.com/plugins/feeds?sort=newest",
+    "https://www.tenable.com/blog/cyber-exposure-alerts/feed",
+    "https://cybersecuritynews.com/feed/",
+    "https://www.cyberscoop.com/feed/",
+    "https://rss.packetstormsecurity.com",
+    "https://www.crowdstrike.com/blog/feed",
+    "https://discuss.elastic.co/c/announcements/security-announcements/31.rss",
+    "https://risky.biz/feeds/risky-business-news/"
+  ],
+  "allKeywords": [],
+  "someKeywords": ["ai", "a.i.", "chatgpt", "llm", "large language models", "machine learning", "deep learning", "neural networks", "natural language processing", "computer vision", "reinforcement learning", "data mining", "data analytics", "big data", "predictive modeling", "image recognition", "speech recognition", "knowledge representation", "expert systems", "decision trees", "genetic algorithms", "support vector machines", "artificial neural networks", "cognitive computing", "semantic analysis", "sentiment analysis", "recommendation systems", "data science", "algorithmic trading", "robotics", "autonomous vehicles", "virtual assistants", "computer-aided diagnosis", "smart home technology", "smart cities", "augmented reality", "virtual reality", "machine translation", "cybersecurity", "ethical AI", "explainable AI", "bias in AI", "fairness in AI", "privacy in AI", "AI ethics", "autonomous systems", "human-robot interaction", "machine perception", "decision support systems"],
+  "noKeywords": ["healthcare"]
+}
