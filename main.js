@@ -117,6 +117,7 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
         const linkElement = document.createElement('a');
         linkElement.href = article.link;
         linkElement.classList.add('article-link');
+		linkElement.target = "_blank";
 
         // Extract the domain from the URL
         const url = new URL(article.link);
@@ -186,6 +187,7 @@ function refreshArticlesIfNeeded(feedUrls, allKeywords, someKeywords, noKeywords
       const linkElement = document.createElement('a');
       linkElement.href = article.link;
       linkElement.classList.add('article-link');
+	  linkElement.target = "_blank";
 
       // Extract the domain from the URL
       const url = new URL(article.link);
