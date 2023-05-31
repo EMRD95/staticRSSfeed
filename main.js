@@ -89,7 +89,7 @@ function displayArticles(articles) {
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
-    thumbnailElement.src = extractThumbnailFromDescription(article.description) || '';
+    thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description);
 
     const faviconElement = document.createElement('img');
     faviconElement.classList.add('favicon');
@@ -111,7 +111,6 @@ function displayArticles(articles) {
     linkElement.href = article.link;
     linkElement.classList.add('article-link');
     linkElement.target = '_blank';
-
     const url = new URL(article.link);
     linkElement.textContent = url.hostname;
 
