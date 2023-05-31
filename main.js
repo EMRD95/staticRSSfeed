@@ -109,7 +109,7 @@ function displayArticles(articles) {
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
-    thumbnailElement.src = article.thumbnail || '';
+    thumbnailElement.src = article.thumbnailUrl || extractThumbnailFromDescription(article.description);
 
     const faviconElement = document.createElement('img');
     faviconElement.classList.add('favicon');
@@ -147,17 +147,3 @@ function displayArticles(articles) {
   });
 }
 
-function loadConfig() {
-  fetch(jsonConfigUrl)
-    .then(response => response.json())
-    .then(data => {
-      const feedUrls = data.feedUrls;
-      const allKeywords = data.allKeywords || [];
-      const someKeywords = data.someKeywords || [];
-      const noKeywords = data.noKeywords || [];
-      fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
-    })
-    .catch(error => console.error(error));
-}
-
-loadConfig();
