@@ -12,16 +12,20 @@ function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
   tempElement.innerHTML = htmlString;
 
-  // Get the text content of the HTML string
   let textContent = tempElement.textContent || tempElement.innerText || '';
-
-  // Remove all tags and categories, both with and without spaces after the colon
   textContent = textContent.replace(/(Tags:|Categories:)\s*\w+(\s*(Tags:|Categories:)\s*\w+)*/g, '');
-
-  // Remove "Source: thehackernews.com – Author: ."
   textContent = textContent.replace('Source: thehackernews.com – Author: .', '');
 
   return textContent;
+}
+
+function extractThumbnailFromDescription(description) {
+  const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
+  const match = description.match(imgTagRegex);
+  if (match) {
+    return match[1];
+  }
+  return '';
 }
 
 function truncateDescription(description) {
@@ -32,28 +36,25 @@ function truncateDescription(description) {
 }
 
 function saveArticlesToLocalStorage(articles) {
-  const cachedArticles = localStorage.getItem(storageKey);
-  const existingArticles = cachedArticles ? JSON.parse(cachedArticles) : [];
-  
-  // Add favicon URL to each article
+  const cachedArticles = loadArticlesFromLocalStorage();
   const updatedArticles = articles.map(article => ({
     ...article,
-    faviconUrl: `https://www.google.com/s2/favicons?domain=${article.link}`
+    faviconUrl: `https://www.google.com/s2/favicons?domain=${article.link}`,
+    thumbnailUrl: article.thumbnail || extractThumbnailFromDescription(article.description),
   }));
 
-  const updatedCachedArticles = [...existingArticles];
+  const updatedCachedArticles = [...cachedArticles];
 
-  // Only add new articles to local storage if they're not already there
   updatedArticles.forEach(article => {
-    if (!existingArticles.some(existingArticle => existingArticle.link === article.link)) {
+    if (!cachedArticles.some(existingArticle => existingArticle.link === article.link)) {
       updatedCachedArticles.push(article);
     }
   });
 
   localStorage.setItem(storageKey, JSON.stringify(updatedCachedArticles));
 }
+
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
-  // Transform keywords to lowercase
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
   someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
   noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
@@ -78,67 +79,15 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
         const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
         const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
 
-        // All keywords must be included in the article's title or description
         const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
-
-        // At least one keyword must be included in the article's title or description
         const someKeywordsIncluded = someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
-
-        // None of the keywords in this list should be included in the article's title or description
         const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
 
         return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
       });
 
       saveArticlesToLocalStorage(filteredArticles);
-
-      const articlesContainer = document.getElementById('articles');
-      articlesContainer.innerHTML = '';
-
-      filteredArticles.forEach(article => {
-        const articleElement = document.createElement('div');
-        articleElement.classList.add('article');
-
-        // Create favicon element
-        const faviconElement = document.createElement('img');
-        faviconElement.classList.add('favicon');
-        faviconElement.src = `https://www.google.com/s2/favicons?domain=${article.link}`;
-
-        // Append favicon to the article element
-        articleElement.appendChild(faviconElement);
-
-        const titleElement = document.createElement('h2');
-        titleElement.textContent = article.title;
-
-        const sourceElement = document.createElement('p');
-        if (article.author || article.creator) {
-          sourceElement.textContent = `Source: ${article.author || article.creator}`;
-        }
-
-        const dateElement = document.createElement('p');
-        dateElement.textContent = formatDate(article.pubDate);
-
-        const descriptionElement = document.createElement('p');
-        const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
-        descriptionElement.textContent = truncateDescription(sanitizedDescription);
-
-        const linkElement = document.createElement('a');
-        linkElement.href = article.link;
-        linkElement.classList.add('article-link');
-		linkElement.target = "_blank";
-
-        // Extract the domain from the URL
-        const url = new URL(article.link);
-        linkElement.textContent = url.hostname; // Use hostname as link text
-
-        articleElement.appendChild(titleElement);
-        articleElement.appendChild(sourceElement);
-        articleElement.appendChild(dateElement);
-        articleElement.appendChild(descriptionElement);
-        articleElement.appendChild(linkElement);
-
-        articlesContainer.appendChild(articleElement);
-      });
+      displayArticlesFromLocalStorage();
     })
     .catch(error => console.error(error));
 }
@@ -152,7 +101,6 @@ function shouldRefreshArticles(lastRefreshTimestamp) {
   const currentTime = new Date().getTime();
   const oneHourInMilliseconds = 60 * 60 * 1000;
 
-  // Also check if there's any new article available
   if (!lastRefreshTimestamp || currentTime - lastRefreshTimestamp >= oneHourInMilliseconds) {
     const cachedArticles = loadArticlesFromLocalStorage();
     if (cachedArticles.length > 0) {
@@ -180,50 +128,50 @@ function displayArticlesFromLocalStorage() {
   articlesContainer.innerHTML = '';
 
   cachedArticles.forEach(article => {
-      const articleElement = document.createElement('div');
-      articleElement.classList.add('article');
+    const articleElement = document.createElement('div');
+    articleElement.classList.add('article');
 
-      // Create favicon element
-      const faviconElement = document.createElement('img');
-      faviconElement.classList.add('favicon');
-      faviconElement.src = article.faviconUrl;
+    const titleElement = document.createElement('h2');
+    titleElement.textContent = article.title;
 
-      // Append favicon to the article element
-      articleElement.appendChild(faviconElement);
+    const thumbnailElement = document.createElement('img');
+    thumbnailElement.classList.add('thumbnail');
+    thumbnailElement.src = article.thumbnailUrl || '';
 
-      const titleElement = document.createElement('h2');
-      titleElement.textContent = article.title;
+    const faviconElement = document.createElement('img');
+    faviconElement.classList.add('favicon');
+    faviconElement.src = article.faviconUrl;
 
-      const sourceElement = document.createElement('p');
-      if (article.author || article.creator) {
-        sourceElement.textContent = `Source: ${article.author || article.creator}`;
-      }
+    const sourceElement = document.createElement('p');
+    if (article.author || article.creator) {
+      sourceElement.textContent = `Source: ${article.author || article.creator}`;
+    }
 
-      const dateElement = document.createElement('p');
-      dateElement.textContent = formatDate(article.pubDate);
+    const dateElement = document.createElement('p');
+    dateElement.textContent = formatDate(article.pubDate);
 
-      const descriptionElement = document.createElement('p');
-      const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
-      descriptionElement.textContent = truncateDescription(sanitizedDescription);
+    const descriptionElement = document.createElement('p');
+    const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
+    descriptionElement.textContent = truncateDescription(sanitizedDescription);
 
-      const linkElement = document.createElement('a');
-      linkElement.href = article.link;
-      linkElement.classList.add('article-link');
-	  linkElement.target = "_blank";
+    const linkElement = document.createElement('a');
+    linkElement.href = article.link;
+    linkElement.classList.add('article-link');
+    linkElement.target = '_blank';
 
-      // Extract the domain from the URL
-      const url = new URL(article.link);
-      linkElement.textContent = url.hostname; // Use hostname as link text
+    const url = new URL(article.link);
+    linkElement.textContent = url.hostname;
 
-      articleElement.appendChild(titleElement);
-      articleElement.appendChild(sourceElement);
-      articleElement.appendChild(dateElement);
-      articleElement.appendChild(descriptionElement);
-      articleElement.appendChild(linkElement);
+    articleElement.appendChild(titleElement);
+    articleElement.appendChild(thumbnailElement);
+    articleElement.appendChild(faviconElement);
+    articleElement.appendChild(sourceElement);
+    articleElement.appendChild(dateElement);
+    articleElement.appendChild(descriptionElement);
+    articleElement.appendChild(linkElement);
 
-      articlesContainer.appendChild(articleElement);
-    });
-  
+    articlesContainer.appendChild(articleElement);
+  });
 }
 
 function loadConfig() {

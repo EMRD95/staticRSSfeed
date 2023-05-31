@@ -143,6 +143,15 @@ h1 {
   }
 }
 
+.thumbnail {
+  max-width: 600px;
+  max-height: 300px;
+  display: block;
+  margin-bottom: -10px;
+  margin-top: -2px;
+}
+
+
 /* Mobile Styles */
 @media (max-width: 425px) {
   .container {
