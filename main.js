@@ -14,6 +14,8 @@ function sanitizeHTML(htmlString) {
 
   let textContent = tempElement.textContent || tempElement.innerText || '';
   textContent = textContent.replace(/(Tags:|Categories:)\s*\w+(\s*(Tags:|Categories:)\s*\w+)*/g, '');
+  textContent = textContent.replace(/#(\w+)/g, '$1');
+  textContent = textContent.replace(/#\w+/g, '');
   textContent = textContent.replace('Source: thehackernews.com – Author: .', '');
 
   return textContent;
