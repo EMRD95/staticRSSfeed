@@ -12,24 +12,39 @@ The default configuration is set to fetch AI and cybersecurity-related content. 
 ![image](https://github.com/EMRD95/staticRSSfeed/assets/114953576/e6a3d102-5b16-4a89-a8c7-335560e13559)
 
 
-> Please note that this application uses the free tier of the RSS2JSON API, which comes with certain usage limitations. If you want to lift these limitations, you can opt for a paid plan and manage the API keys securely on your server-side setup.
+> Please note that this application uses the free tier of the RSS2JSON API, which comes with certain usage limitations (25 feeds max). If you want to lift these limitations, you can opt for a paid plan.
 
 ## Setup Instructions
 
-To deploy this project as a GitHub Pages site, follow these steps:
+To use this project, follow these simple steps:
 
-1. **Fork the Project**: Fork the [Static RSS Feed](https://github.com/EMRD95/staticRSSfeed) repository via the "Fork" button located on the top right corner of the GitHub page, creating a replica of the project within your account.
+1. **Create an API Key**: Go to [rss2json](https://rss2json.com/) and create an account. During this process, you'll get an API key. Keep it safe - it's unique to your account.
 
-2. **Clone the Repository**: Upon forking, clone the repository onto your local machine using Git. Open the terminal and execute the command:
-   ```
-   git clone https://github.com/your-username/staticRSSfeed.git
-   ```
+2. **Set HTTP Referrer**: While still on the rss2json site, set the HTTP referrer to your domain name. This will ensure that your API key is only usable for requests from your domain.
 
-3. **Modify the JSON Configuration File**: Within the project directory, locate and open the `config.json` file. Adjust the configuration settings to align with your requirements, such as updating the RSS feed URLs, keywords, among others.
+3. **Fork the Repository**: Navigate to the [Static RSS Feed](https://github.com/EMRD95/staticRSSfeed) repository on GitHub and click the "Fork" button in the upper-right corner of the page. This will create a copy of the repository in your own GitHub account.
 
-4. **Activate GitHub Pages**: Navigate to the forked repository on GitHub and click on the "Settings" tab. Scroll down to the "GitHub Pages" section, select your preferred branch under the "Source" dropdown menu (usually "main" or "master"), and save your changes. This action will enable GitHub Pages for your repository.
+4. **Edit the JavaScript File**: 
+    - In your forked repository, navigate to the `main.js` file. 
+    - Click on the pencil icon (or "Edit this file") in the upper-right corner of the file view to start editing the file. 
+    - Look for the `const apiKey = 'Your-API-Key-Here';` line and replace `'Your-API-Key-Here'` with the API key you got from rss2json, enclosed in single quotes. 
+    - Scroll down and click on "Commit changes".
 
-5. **Access the Deployed Site**: After enabling GitHub Pages, your site will be accessible via `https://your-username.github.io/staticRSSfeed`. It might take a short while for the changes to propagate and your site to be accessible.
+5. **Locate the JSON Configuration File**: In your forked repository on GitHub, navigate to the `config.json` file.
+
+6. **Edit the JSON Configuration File**: Click on the pencil icon (or "Edit this file") in the upper-right corner of the file view. You'll see several key-value pairs in the file:
+
+   - `"feedUrls"`: This is an array of the URLs for the RSS feeds you want to include. Replace the existing URLs with the ones for your desired feeds, each enclosed in quotes and separated by commas. For example, you might change it to look something like this: `"feedUrls": ["http://myfavoritesite.com/rss", "http://anothergreatsite.com/feed"]`.
+
+   - `"allKeywords"`, `"someKeywords"`, and `"noKeywords"`: These are arrays of keywords to filter the feed articles. "AllKeywords" are keywords that must all be present in an article for it to be included. "SomeKeywords" are keywords where at least one must be present. "NoKeywords" are keywords that, if present, exclude an article. Update these arrays with your desired keywords.
+
+   An example of modified keyword settings could be: `"allKeywords": ["AI", "OpenAI"]`, `"someKeywords": ["research", "GPT-4"]`, `"noKeywords": ["negative"]`.
+
+7. **Save Your Changes**: Once you're done editing, scroll down and click on "Commit changes".
+
+8. **Activate GitHub Pages**: Go back to the main page of your forked repository and click on the "Settings" tab. Scroll down to the "GitHub Pages" section. Select the "main" (or "master") branch under the "Source" dropdown and click "Save". GitHub will now automatically build and deploy your site.
+
+9. **Access Your Site**: After a few moments, your site will be live! You can access it at `https://<your-username>.github.io/staticRSSfeed`. 
 
 ## Usage
 
