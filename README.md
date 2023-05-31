@@ -9,7 +9,8 @@ The Static RSS Feed is a light static website that utilizes JavaScript to fetch 
 
 The default configuration is set to fetch AI and cybersecurity-related content. However, you can easily change this to suit your interests by modifying the `config.json` file.
 
-![image](https://github.com/EMRD95/staticRSSfeed/assets/114953576/08fde741-f08a-494f-8ffb-453151d2b194)
+![image](https://github.com/EMRD95/staticRSSfeed/assets/114953576/e6a3d102-5b16-4a89-a8c7-335560e13559)
+
 
 > Please note that this application uses the free tier of the RSS2JSON API, which comes with certain usage limitations. If you want to lift these limitations, you can opt for a paid plan and manage the API keys securely on your server-side setup.
 
