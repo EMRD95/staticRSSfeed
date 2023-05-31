@@ -2,7 +2,6 @@ const apiKey = 'ftukbsji3qqrpl4nwiftgmsh7c2inufrg1fabpi1';
 const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=&api_key=${apiKey}`;
 const jsonConfigUrl = 'config.json';
 const maxDescriptionLength = 800;
-const storageKey = 'cachedArticles';
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -36,25 +35,6 @@ function truncateDescription(description) {
     return description.slice(0, maxDescriptionLength) + '...';
   }
   return description;
-}
-
-function saveArticlesToLocalStorage(articles) {
-  const cachedArticles = loadArticlesFromLocalStorage();
-  const updatedArticles = articles.map(article => ({
-    ...article,
-    faviconUrl: `https://www.google.com/s2/favicons?domain=${article.link}`,
-    thumbnailUrl: article.thumbnail || extractThumbnailFromDescription(article.description),
-  }));
-
-  const updatedCachedArticles = [...cachedArticles];
-
-  updatedArticles.forEach(article => {
-    if (!cachedArticles.some(existingArticle => existingArticle.link === article.link)) {
-      updatedCachedArticles.push(article);
-    }
-  });
-
-  localStorage.setItem(storageKey, JSON.stringify(updatedCachedArticles));
 }
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
@@ -109,7 +89,7 @@ function displayArticles(articles) {
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
-    thumbnailElement.src = article.thumbnailUrl || extractThumbnailFromDescription(article.description);
+    thumbnailElement.src = extractThumbnailFromDescription(article.description) || '';
 
     const faviconElement = document.createElement('img');
     faviconElement.classList.add('favicon');
@@ -147,3 +127,17 @@ function displayArticles(articles) {
   });
 }
 
+function loadConfig() {
+  fetch(jsonConfigUrl)
+    .then(response => response.json())
+    .then(data => {
+      const feedUrls = data.feedUrls;
+      const allKeywords = data.allKeywords || [];
+      const someKeywords = data.someKeywords || [];
+      const noKeywords = data.noKeywords || [];
+      fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
+    })
+    .catch(error => console.error(error));
+}
+
+loadConfig();
