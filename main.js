@@ -1,4 +1,5 @@
-const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const apiKey = 'ftukbsji3qqrpl4nwiftgmsh7c2inufrg1fabpi1';
+const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=&api_key=${apiKey}`;
 const jsonConfigUrl = 'config.json';
 const maxDescriptionLength = 800;
 const storageKey = 'cachedArticles';
@@ -61,14 +62,16 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
   noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
 
-  const promises = feedUrls.map(url =>
-    fetch(apiUrl + encodeURIComponent(url)).then(response => {
+  const promises = feedUrls.map(url => {
+    const encodedUrl = encodeURIComponent(url);
+    const feedApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}&api_key=${apiKey}`;
+    return fetch(feedApiUrl).then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
-    })
-  );
+    });
+  });
 
   Promise.allSettled(promises)
     .then(results => {

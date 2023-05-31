@@ -35,7 +35,7 @@ h1 {
 
 .article {
   margin-bottom: 30px;
-  max-width: 600px;
+  max-width: 600px; 
   margin-left: auto;
   margin-right: auto;
   background-color: #222;
@@ -122,7 +122,13 @@ h1 {
 
 
 
-
+.thumbnail {
+  max-width: 100%;
+  max-height: 300px;
+  display: block;
+  margin-bottom: -10px;
+  margin-top: -2px;
+}
 
 
 @media (max-width: 768px) {
@@ -130,6 +136,10 @@ h1 {
     font-size: 30px;
   }
 
+  .article {
+    max-width: 100%; 
+  }
+  
   .article h2 {
     font-size: 20px;
   }
@@ -144,13 +154,7 @@ h1 {
   }
 }
 
-.thumbnail {
-  max-width: 600px;
-  max-height: 300px;
-  display: block;
-  margin-bottom: -10px;
-  margin-top: -2px;
-}
+
 
 
 /* Mobile Styles */
@@ -172,6 +176,7 @@ h1 {
   .article {
     margin-bottom: 20px;
     padding: 15px;
+	max-width: 100%;
   }
 
   .article h2 {
