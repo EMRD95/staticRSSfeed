@@ -41,7 +41,15 @@ function saveArticlesToLocalStorage(articles) {
     faviconUrl: `https://www.google.com/s2/favicons?domain=${article.link}`
   }));
 
-  const updatedCachedArticles = [...existingArticles, ...updatedArticles];
+  const updatedCachedArticles = [...existingArticles];
+
+  // Only add new articles to local storage if they're not already there
+  updatedArticles.forEach(article => {
+    if (!existingArticles.some(existingArticle => existingArticle.link === article.link)) {
+      updatedCachedArticles.push(article);
+    }
+  });
+
   localStorage.setItem(storageKey, JSON.stringify(updatedCachedArticles));
 }
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
@@ -143,21 +151,35 @@ function loadArticlesFromLocalStorage() {
 function shouldRefreshArticles(lastRefreshTimestamp) {
   const currentTime = new Date().getTime();
   const oneHourInMilliseconds = 60 * 60 * 1000;
-  return currentTime - lastRefreshTimestamp >= oneHourInMilliseconds;
+
+  // Also check if there's any new article available
+  if (!lastRefreshTimestamp || currentTime - lastRefreshTimestamp >= oneHourInMilliseconds) {
+    const cachedArticles = loadArticlesFromLocalStorage();
+    if (cachedArticles.length > 0) {
+      const newestArticleDate = new Date(cachedArticles[0].pubDate).getTime();
+      return currentTime - newestArticleDate >= oneHourInMilliseconds;
+    }
+  }
+
+  return false;
 }
 
 function refreshArticlesIfNeeded(feedUrls, allKeywords, someKeywords, noKeywords) {
   const lastRefreshTimestamp = localStorage.getItem('lastRefreshTimestamp');
-
   if (!lastRefreshTimestamp || shouldRefreshArticles(Number(lastRefreshTimestamp))) {
     localStorage.setItem('lastRefreshTimestamp', new Date().getTime().toString());
     fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
   } else {
-    const cachedArticles = loadArticlesFromLocalStorage();
-    const articlesContainer = document.getElementById('articles');
-    articlesContainer.innerHTML = '';
+    displayArticlesFromLocalStorage();
+  }
+}
 
-    cachedArticles.forEach(article => {
+function displayArticlesFromLocalStorage() {
+  const cachedArticles = loadArticlesFromLocalStorage();
+  const articlesContainer = document.getElementById('articles');
+  articlesContainer.innerHTML = '';
+
+  cachedArticles.forEach(article => {
       const articleElement = document.createElement('div');
       articleElement.classList.add('article');
 
@@ -201,7 +223,7 @@ function refreshArticlesIfNeeded(feedUrls, allKeywords, someKeywords, noKeywords
 
       articlesContainer.appendChild(articleElement);
     });
-  }
+  
 }
 
 function loadConfig() {
