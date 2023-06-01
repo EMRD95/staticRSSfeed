@@ -104,7 +104,7 @@ function loadArticlesFromLocalStorage() {
 
 function shouldRefreshArticles(lastRefreshTimestamp) {
   const currentTime = new Date().getTime();
-  const oneHourInMilliseconds = 15 * 60 * 1000;
+  const oneHourInMilliseconds = 60 * 60 * 1000;
 
   if (!lastRefreshTimestamp || currentTime - lastRefreshTimestamp >= oneHourInMilliseconds) {
     const cachedArticles = loadArticlesFromLocalStorage();
