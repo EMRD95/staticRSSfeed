@@ -2,7 +2,6 @@ const apiKey = 'ftukbsji3qqrpl4nwiftgmsh7c2inufrg1fabpi1';
 const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=&api_key=${apiKey}`;
 const jsonConfigUrl = 'config.json';
 const maxDescriptionLength = 800;
-const storageKey = 'cachedArticles';
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -36,25 +35,6 @@ function truncateDescription(description) {
     return description.slice(0, maxDescriptionLength) + '...';
   }
   return description;
-}
-
-function saveArticlesToLocalStorage(articles) {
-  const cachedArticles = loadArticlesFromLocalStorage();
-  const updatedArticles = articles.map(article => ({
-    ...article,
-    faviconUrl: `https://www.google.com/s2/favicons?domain=${article.link}`,
-    thumbnailUrl: article.thumbnail || extractThumbnailFromDescription(article.description),
-  }));
-
-  const updatedCachedArticles = [...cachedArticles];
-
-  updatedArticles.forEach(article => {
-    if (!cachedArticles.some(existingArticle => existingArticle.link === article.link)) {
-      updatedCachedArticles.push(article);
-    }
-  });
-
-  localStorage.setItem(storageKey, JSON.stringify(updatedCachedArticles));
 }
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
@@ -91,48 +71,16 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
         return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
       });
 
-      saveArticlesToLocalStorage(filteredArticles);
-      displayArticlesFromLocalStorage();
+      displayArticles(filteredArticles);
     })
     .catch(error => console.error(error));
 }
 
-function loadArticlesFromLocalStorage() {
-  const cachedArticles = localStorage.getItem(storageKey);
-  return cachedArticles ? JSON.parse(cachedArticles) : [];
-}
-
-function shouldRefreshArticles(lastRefreshTimestamp) {
-  const currentTime = new Date().getTime();
-  const oneHourInMilliseconds = 60 * 60 * 1000;
-
-  if (!lastRefreshTimestamp || currentTime - lastRefreshTimestamp >= oneHourInMilliseconds) {
-    const cachedArticles = loadArticlesFromLocalStorage();
-    if (cachedArticles.length > 0) {
-      const newestArticleDate = new Date(cachedArticles[0].pubDate).getTime();
-      return currentTime - newestArticleDate >= oneHourInMilliseconds;
-    }
-  }
-
-  return false;
-}
-
-function refreshArticlesIfNeeded(feedUrls, allKeywords, someKeywords, noKeywords) {
-  const lastRefreshTimestamp = localStorage.getItem('lastRefreshTimestamp');
-  if (!lastRefreshTimestamp || shouldRefreshArticles(Number(lastRefreshTimestamp))) {
-    localStorage.setItem('lastRefreshTimestamp', new Date().getTime().toString());
-    fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
-  } else {
-    displayArticlesFromLocalStorage();
-  }
-}
-
-function displayArticlesFromLocalStorage() {
-  const cachedArticles = loadArticlesFromLocalStorage();
+function displayArticles(articles) {
   const articlesContainer = document.getElementById('articles');
   articlesContainer.innerHTML = '';
 
-  cachedArticles.forEach(article => {
+  articles.forEach(article => {
     const articleElement = document.createElement('div');
     articleElement.classList.add('article');
 
@@ -141,11 +89,11 @@ function displayArticlesFromLocalStorage() {
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
-    thumbnailElement.src = article.thumbnailUrl || '';
+    thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description);
 
     const faviconElement = document.createElement('img');
     faviconElement.classList.add('favicon');
-    faviconElement.src = article.faviconUrl;
+    faviconElement.src = `https://www.google.com/s2/favicons?domain=${article.link}`;
 
     const sourceElement = document.createElement('p');
     if (article.author || article.creator) {
@@ -163,7 +111,6 @@ function displayArticlesFromLocalStorage() {
     linkElement.href = article.link;
     linkElement.classList.add('article-link');
     linkElement.target = '_blank';
-
     const url = new URL(article.link);
     linkElement.textContent = url.hostname;
 
@@ -187,7 +134,7 @@ function loadConfig() {
       const allKeywords = data.allKeywords || [];
       const someKeywords = data.someKeywords || [];
       const noKeywords = data.noKeywords || [];
-      refreshArticlesIfNeeded(feedUrls, allKeywords, someKeywords, noKeywords);
+      fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
     })
     .catch(error => console.error(error));
 }
