@@ -131,12 +131,38 @@ function loadConfig() {
     .then(response => response.json())
     .then(data => {
       const feedUrls = data.feedUrls;
-      const allKeywords = data.allKeywords || [];
-      const someKeywords = data.someKeywords || [];
-      const noKeywords = data.noKeywords || [];
+      const keywordOptions = data.keywordOptions;
+
+      // Create a dropdown for the keyword options
+      const keywordDropdown = document.createElement('select');
+      for (const option in keywordOptions) {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        keywordDropdown.appendChild(optionElement);
+      }
+
+      // Add an event listener to the dropdown
+      keywordDropdown.addEventListener('change', () => {
+        const selectedOption = keywordDropdown.value;
+        const allKeywords = keywordOptions[selectedOption].allKeywords || [];
+        const someKeywords = keywordOptions[selectedOption].someKeywords || [];
+        const noKeywords = keywordOptions[selectedOption].noKeywords || [];
+        fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
+      });
+
+      // Add the dropdown to the page
+      document.body.appendChild(keywordDropdown);
+
+      // Fetch articles with the first keyword option
+      const firstOption = Object.keys(keywordOptions)[0];
+      const allKeywords = keywordOptions[firstOption].allKeywords || [];
+      const someKeywords = keywordOptions[firstOption].someKeywords || [];
+      const noKeywords = keywordOptions[firstOption].noKeywords || [];
       fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
     })
     .catch(error => console.error(error));
 }
+
 
 loadConfig();
