@@ -132,6 +132,17 @@ h1 {
   margin-top: -2px;
 }
 
+#keyword-options {
+  width: 200px;
+  margin-bottom: 20px;
+}
+
+#keyword-options select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+}
+
 
 @media (max-width: 768px) {
   h1 {
