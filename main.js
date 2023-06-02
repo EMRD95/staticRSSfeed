@@ -151,8 +151,9 @@ function loadConfig() {
         fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
       });
 
-      // Add the dropdown to the page
-      document.body.appendChild(keywordDropdown);
+// Add the dropdown to the page
+document.getElementById('keyword-options').appendChild(keywordDropdown);
+
 
       // Fetch articles with the first keyword option
       const firstOption = Object.keys(keywordOptions)[0];
