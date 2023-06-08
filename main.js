@@ -8,15 +8,15 @@ function formatDate(dateStr) {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
-function decodeHTMLEntities(text) {
-  var textArea = document.createElement('textarea');
+function decodeHtmlEntities(text) {
+  const textArea = document.createElement('textarea');
   textArea.innerHTML = text;
   return textArea.value;
 }
 
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
-  tempElement.innerHTML = decodeHTMLEntities(htmlString); // use decodeHTMLEntities here
+  tempElement.innerHTML = decodeHtmlEntities(htmlString);
 
   let textContent = tempElement.textContent || tempElement.innerText || '';
   textContent = textContent.replace(/(Tags:|Categories:)\s*\w+(\s*(Tags:|Categories:)\s*\w+)*/g, '');
