@@ -1,3 +1,5 @@
+Just convert the &amp; or &amp;#039; characters that are shown in the article and description into the regular human readable character, the &amp is shown is is from the xml of the rss feed
+
 const apiKey = 'ftukbsji3qqrpl4nwiftgmsh7c2inufrg1fabpi1';
 const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=&api_key=${apiKey}`;
 const jsonConfigUrl = 'config.json';
@@ -8,15 +10,17 @@ function formatDate(dateStr) {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
-function decodeHtml(html) {
-  var txt = document.createElement("textarea");
-  txt.innerHTML = html;
-  return txt.value;
+function decodeHtmlEntities(str) {
+    var textArea = document.createElement('textarea');
+	const sanitizedDescription = decodeHtmlEntities(sanitizeHTML(article.description).replace(/<.*?>/g, ''));
+	descriptionElement.textContent = truncateDescription(sanitizedDescription);
+    textArea.innerHTML = str;
+    return textArea.value;
 }
 
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
-  tempElement.innerHTML = decodeHtml(htmlString);
+  tempElement.innerHTML = htmlString;
 
   let textContent = tempElement.textContent || tempElement.innerText || '';
   textContent = textContent.replace(/(Tags:|Categories:)\s*\w+(\s*(Tags:|Categories:)\s*\w+)*/g, '');
