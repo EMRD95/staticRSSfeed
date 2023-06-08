@@ -8,23 +8,24 @@ function formatDate(dateStr) {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+function decodeHTMLEntities(text) {
+  var textArea = document.createElement('textarea');
+  textArea.innerHTML = text;
+  return textArea.value;
+}
+
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
-  tempElement.innerHTML = htmlString;
+  tempElement.innerHTML = decodeHTMLEntities(htmlString); // use decodeHTMLEntities here
 
   let textContent = tempElement.textContent || tempElement.innerText || '';
   textContent = textContent.replace(/(Tags:|Categories:)\s*\w+(\s*(Tags:|Categories:)\s*\w+)*/g, '');
   textContent = textContent.replace(/#(\w+)/g, '$1');
   textContent = textContent.replace(/#\w+/g, '');
   textContent = textContent.replace('Source: thehackernews.com – Author: .', '');
-  
-  // add these lines to replace HTML entities
-  textContent = textContent.replace(/&amp;/g, '&');
-  textContent = textContent.replace(/&amp;#039;/g, '\'');
 
   return textContent;
 }
-
 
 function extractThumbnailFromDescription(description) {
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
