@@ -51,6 +51,7 @@ h1 {
   margin-bottom: 10px;
   color: #fff;
   margin-top: -5px;
+overflow-wrap: break-word;
 }
 
 .article p {
