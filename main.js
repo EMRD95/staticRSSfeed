@@ -10,9 +10,12 @@ function formatDate(dateStr) {
 
 function decodeHtmlEntities(text) {
   const textArea = document.createElement('textarea');
-  textArea.innerHTML = text;
+  // Replace &amp; with & to handle &amp;#039;
+  const textWithAmpersand = text.replace(/&amp;/g, '&');
+  textArea.innerHTML = textWithAmpersand;
   return textArea.value;
 }
+
 
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
@@ -38,11 +41,10 @@ function extractThumbnailFromDescription(description) {
 
 function truncateDescription(description) {
   if (description.length > maxDescriptionLength) {
-    return description.slice(0, maxDescriptionLength) + '...';
+    return decodeHtmlEntities(description.slice(0, maxDescriptionLength)) + '...';
   }
-  return description;
+  return decodeHtmlEntities(description);
 }
-
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
@@ -110,10 +112,9 @@ function displayArticles(articles) {
     const dateElement = document.createElement('p');
     dateElement.textContent = formatDate(article.pubDate);
 
-const descriptionElement = document.createElement('p');
-const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
-descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
-
+    const descriptionElement = document.createElement('p');
+	const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
+    descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
 
 
     const linkElement = document.createElement('a');
