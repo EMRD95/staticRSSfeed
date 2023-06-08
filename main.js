@@ -1,7 +1,7 @@
 const apiKey = 'ftukbsji3qqrpl4nwiftgmsh7c2inufrg1fabpi1';
 const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=&api_key=${apiKey}`;
 const jsonConfigUrl = 'config.json';
-const maxDescriptionLength = 800;
+const maxDescriptionLength = 10000;
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
