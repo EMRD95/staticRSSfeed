@@ -16,7 +16,7 @@ function decodeHtmlEntities(text) {
 
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
-  tempElement.innerHTML = htmlString;
+  tempElement.innerHTML = decodeHtmlEntities(htmlString);
 
   let textContent = tempElement.textContent || tempElement.innerText || '';
   textContent = textContent.replace(/(Tags:|Categories:)\s*\w+(\s*(Tags:|Categories:)\s*\w+)*/g, '');
@@ -42,6 +42,7 @@ function truncateDescription(description) {
   }
   return description;
 }
+
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
@@ -103,15 +104,15 @@ function displayArticles(articles) {
 
     const sourceElement = document.createElement('p');
     if (article.author || article.creator) {
-      sourceElement.textContent = `Source: ${decodeHtmlEntities(article.author || article.creator)}`;
+    sourceElement.textContent = `Source: ${decodeHtmlEntities(article.author) || decodeHtmlEntities(article.creator)}`;
     }
 
     const dateElement = document.createElement('p');
     dateElement.textContent = formatDate(article.pubDate);
 
-    const descriptionElement = document.createElement('p');
-    const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
-    descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
+const descriptionElement = document.createElement('p');
+const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
+descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
 
 
 
