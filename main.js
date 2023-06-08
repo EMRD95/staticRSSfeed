@@ -1,7 +1,7 @@
 const apiKey = 'ftukbsji3qqrpl4nwiftgmsh7c2inufrg1fabpi1';
 const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=&api_key=${apiKey}`;
 const jsonConfigUrl = 'config.json';
-const maxDescriptionLength = 10000;
+const maxDescriptionLength = 800;
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -30,23 +30,12 @@ function sanitizeHTML(htmlString) {
   return textContent;
 }
 
-function extractThumbnailFromDescription(description) {
-  let match;
-
-  // Check for <img> tags
+function extractThumbnailFromDescription(description, content) {
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
-  match = description.match(imgTagRegex);
+  const match = description.match(imgTagRegex) || content.match(imgTagRegex);
   if (match) {
     return match[1];
   }
-
-  // Check for div with class wp-block-image
-  const divImgRegex = /<div class="wp-block-image">.*?<img.*?src="(.*?)".*?>/is;
-  match = description.match(divImgRegex);
-  if (match) {
-    return match[1];
-  }
-
   return '';
 }
 
@@ -110,7 +99,8 @@ function displayArticles(articles) {
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
-    thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description);
+    thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description, article.content);
+
 
     const faviconElement = document.createElement('img');
     faviconElement.classList.add('favicon');
