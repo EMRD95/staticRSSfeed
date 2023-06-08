@@ -30,12 +30,20 @@ function sanitizeHTML(htmlString) {
   return textContent;
 }
 
-function extractThumbnailFromDescription(description, content) {
+function extractThumbnailFromDescription(description) {
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
-  const match = description.match(imgTagRegex) || content.match(imgTagRegex);
+  const wpImageDivRegex = /<div class="wp-block-image">.*?<img.*?src="(.*?)".*?>.*?<\/div>/is;
+  
+  let match = description.match(imgTagRegex);
   if (match) {
     return match[1];
   }
+  
+  match = description.match(wpImageDivRegex);
+  if (match) {
+    return match[1];
+  }
+
   return '';
 }
 
@@ -99,8 +107,7 @@ function displayArticles(articles) {
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
-    thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description, article.content);
-
+    thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description);
 
     const faviconElement = document.createElement('img');
     faviconElement.classList.add('favicon');
