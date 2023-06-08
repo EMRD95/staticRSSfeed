@@ -38,9 +38,9 @@ function extractThumbnailFromDescription(description) {
 
 function truncateDescription(description) {
   if (description.length > maxDescriptionLength) {
-    return description.slice(0, maxDescriptionLength) + '...';
+    return decodeHtmlEntities(description.slice(0, maxDescriptionLength)) + '...';
   }
-  return description;
+  return decodeHtmlEntities(description);
 }
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
@@ -91,7 +91,7 @@ function displayArticles(articles) {
     articleElement.classList.add('article');
 
     const titleElement = document.createElement('h2');
-    titleElement.textContent = article.title;
+    titleElement.textContent = decodeHtmlEntities(article.title);
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
@@ -103,15 +103,16 @@ function displayArticles(articles) {
 
     const sourceElement = document.createElement('p');
     if (article.author || article.creator) {
-      sourceElement.textContent = `Source: ${article.author || article.creator}`;
+    sourceElement.textContent = `Source: ${decodeHtmlEntities(article.author) || decodeHtmlEntities(article.creator)}`;
     }
 
     const dateElement = document.createElement('p');
     dateElement.textContent = formatDate(article.pubDate);
 
     const descriptionElement = document.createElement('p');
-    const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
-    descriptionElement.textContent = truncateDescription(sanitizedDescription);
+	const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
+    descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
+
 
     const linkElement = document.createElement('a');
     linkElement.href = article.link;
