@@ -91,7 +91,7 @@ function displayArticles(articles) {
     articleElement.classList.add('article');
 
     const titleElement = document.createElement('h2');
-    titleElement.textContent = decodeHtmlEntities(article.title);
+    
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
@@ -103,6 +103,7 @@ function displayArticles(articles) {
 
     const sourceElement = document.createElement('p');
     if (article.author || article.creator) {
+	titleElement.textContent = decodeHtmlEntities(article.title);
     sourceElement.textContent = `Source: ${decodeHtmlEntities(article.author) || decodeHtmlEntities(article.creator)}`;
     }
 
@@ -110,9 +111,8 @@ function displayArticles(articles) {
     dateElement.textContent = formatDate(article.pubDate);
 
     const descriptionElement = document.createElement('p');
-	const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
+    const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
     descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
-
 
     const linkElement = document.createElement('a');
     linkElement.href = article.link;
