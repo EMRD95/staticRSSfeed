@@ -16,7 +16,7 @@ function decodeHtmlEntities(text) {
 
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
-  tempElement.innerHTML = decodeHtmlEntities(htmlString);
+  tempElement.innerHTML = htmlString;
 
   let textContent = tempElement.textContent || tempElement.innerText || '';
   textContent = textContent.replace(/(Tags:|Categories:)\s*\w+(\s*(Tags:|Categories:)\s*\w+)*/g, '');
@@ -38,9 +38,9 @@ function extractThumbnailFromDescription(description) {
 
 function truncateDescription(description) {
   if (description.length > maxDescriptionLength) {
-    return decodeHtmlEntities(description.slice(0, maxDescriptionLength)) + '...';
+    return description.slice(0, maxDescriptionLength) + '...';
   }
-  return decodeHtmlEntities(description);
+  return description;
 }
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
@@ -91,7 +91,7 @@ function displayArticles(articles) {
     articleElement.classList.add('article');
 
     const titleElement = document.createElement('h2');
-    
+    titleElement.textContent = decodeHtmlEntities(article.title);
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
@@ -103,8 +103,7 @@ function displayArticles(articles) {
 
     const sourceElement = document.createElement('p');
     if (article.author || article.creator) {
-	titleElement.textContent = decodeHtmlEntities(article.title);
-    sourceElement.textContent = `Source: ${decodeHtmlEntities(article.author) || decodeHtmlEntities(article.creator)}`;
+      sourceElement.textContent = `Source: ${decodeHtmlEntities(article.author || article.creator)}`;
     }
 
     const dateElement = document.createElement('p');
@@ -113,6 +112,8 @@ function displayArticles(articles) {
     const descriptionElement = document.createElement('p');
     const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
     descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
+
+
 
     const linkElement = document.createElement('a');
     linkElement.href = article.link;
