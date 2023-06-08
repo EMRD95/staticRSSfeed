@@ -31,13 +31,30 @@ function sanitizeHTML(htmlString) {
 }
 
 function extractThumbnailFromDescription(description) {
+  // Create a new DOMParser
+  const parser = new DOMParser();
+  
+  // Parse the HTML string
+  const htmlDoc = parser.parseFromString(description, 'text/html');
+  
+  // Select the first .wp-block-image img element
+  const imgElement = htmlDoc.querySelector('.wp-block-image img');
+  
+  // If we found an img element, return its src attribute
+  if (imgElement) {
+    return imgElement.getAttribute('src');
+  }
+  
+  // If no .wp-block-image img was found, fall back to the existing behavior
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
   const match = description.match(imgTagRegex);
   if (match) {
     return match[1];
   }
+  
   return '';
 }
+
 
 function truncateDescription(description) {
   if (description.length > maxDescriptionLength) {
