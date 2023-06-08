@@ -1,5 +1,3 @@
-Just convert the &amp; or &amp;#039; characters that are shown in the article and description into the regular human readable character, the &amp is shown is is from the xml of the rss feed
-
 const apiKey = 'ftukbsji3qqrpl4nwiftgmsh7c2inufrg1fabpi1';
 const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=&api_key=${apiKey}`;
 const jsonConfigUrl = 'config.json';
@@ -8,14 +6,6 @@ const maxDescriptionLength = 800;
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-function decodeHtmlEntities(str) {
-    var textArea = document.createElement('textarea');
-	const sanitizedDescription = decodeHtmlEntities(sanitizeHTML(article.description).replace(/<.*?>/g, ''));
-	descriptionElement.textContent = truncateDescription(sanitizedDescription);
-    textArea.innerHTML = str;
-    return textArea.value;
 }
 
 function sanitizeHTML(htmlString) {
@@ -27,9 +17,14 @@ function sanitizeHTML(htmlString) {
   textContent = textContent.replace(/#(\w+)/g, '$1');
   textContent = textContent.replace(/#\w+/g, '');
   textContent = textContent.replace('Source: thehackernews.com – Author: .', '');
+  
+  // add these lines to replace HTML entities
+  textContent = textContent.replace(/&amp;/g, '&');
+  textContent = textContent.replace(/&amp;#039;/g, '\'');
 
   return textContent;
 }
+
 
 function extractThumbnailFromDescription(description) {
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
