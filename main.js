@@ -154,8 +154,8 @@ function displayArticles(articles) {
     factCheckButton.textContent = '🤔';
 	factCheckButton.classList.add('fact-check'); // Add the new class
     factCheckButton.onclick = () => {
-      const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
-      window.open(`https://toolbox.google.com/factcheck/explorer/search/${query}`, '_blank');
+	const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
+	window.open(`https://toolbox.google.com/factcheck/explorer/search/${query};hl=`, '_blank');
     };
 
     articleElement.appendChild(titleElement);
