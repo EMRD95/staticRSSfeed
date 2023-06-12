@@ -106,6 +106,9 @@ function displayArticles(articles) {
     const sanitizedTitle = sanitizeHTML(article.title).replace(/<.*?>/g, '');
     titleElement.textContent = decodeHtmlEntities(sanitizedTitle);
 
+    const googleUrl = new URL(article.link);
+    const originalUrl = googleUrl.searchParams.get('url');
+	  
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
     thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description);
