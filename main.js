@@ -150,8 +150,6 @@ function displayArticles(articles) {
     const url = new URL(article.link);
     linkElement.textContent = url.hostname;
 
-    const sanitizedTitle = sanitizeHTML(article.title).replace(/<.*?>/g, '');
-
     const factCheckButton = document.createElement('button');
     factCheckButton.textContent = 'Fact Check';
     factCheckButton.onclick = () => {
