@@ -16,6 +16,13 @@ function decodeHtmlEntities(text) {
   return textArea.value;
 }
 
+function parseGoogleUrl(url) {
+  if (url.includes('www.google.com/url')) {
+    const params = new URLSearchParams(url.split('?')[1]);
+    return params.get('url');
+  }
+  return url;
+}
 
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
@@ -71,12 +78,17 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
     });
   });
 
-  Promise.allSettled(promises)
+Promise.allSettled(promises)
     .then(results => {
-      const articles = results.flatMap(result =>
+      let articles = results.flatMap(result =>
         result.status === 'fulfilled' ? result.value.items : []
       );
       articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+      articles = articles.map(article => {
+        article.link = parseGoogleUrl(article.link); // update the link
+        article.faviconUrl = `https://www.google.com/s2/favicons?domain=${article.link}`; // update the faviconUrl
+        return article;
+      });
 
       const filteredArticles = articles.filter(article => {
         const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
@@ -105,9 +117,6 @@ function displayArticles(articles) {
     const titleElement = document.createElement('h2');
     const sanitizedTitle = sanitizeHTML(article.title).replace(/<.*?>/g, '');
     titleElement.textContent = decodeHtmlEntities(sanitizedTitle);
-
-    const googleUrl = new URL(article.link);
-    const originalUrl = googleUrl.searchParams.get('url');
 	  
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
@@ -115,7 +124,7 @@ function displayArticles(articles) {
 
     const faviconElement = document.createElement('img');
     faviconElement.classList.add('favicon');
-    faviconElement.src = `https://www.google.com/s2/favicons?domain=${article.link}`;
+    faviconElement.src = article.faviconUrl;
 
     const sourceElement = document.createElement('p');
     if (article.author || article.creator) {
