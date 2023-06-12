@@ -151,7 +151,7 @@ function displayArticles(articles) {
     linkElement.textContent = url.hostname;
 
     const factCheckButton = document.createElement('button');
-    factCheckButton.textContent = 'Fact Check';
+    factCheckButton.textContent = '🤔';
 	factCheckButton.classList.add('fact-check'); // Add the new class
     factCheckButton.onclick = () => {
       const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
