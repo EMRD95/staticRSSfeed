@@ -103,7 +103,8 @@ function displayArticles(articles) {
     articleElement.classList.add('article');
 
     const titleElement = document.createElement('h2');
-    titleElement.textContent = decodeHtmlEntities(article.title);
+    const sanitizedTitle = sanitizeHTML(article.title).replace(/<.*?>/g, '');
+    titleElement.textContent = decodeHtmlEntities(sanitizedTitle);
 
     const thumbnailElement = document.createElement('img');
     thumbnailElement.classList.add('thumbnail');
