@@ -152,6 +152,7 @@ function displayArticles(articles) {
 
     const factCheckButton = document.createElement('button');
     factCheckButton.textContent = 'Fact Check';
+	factCheckButton.classList.add('fact-check'); // Add the new class
     factCheckButton.onclick = () => {
       const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
       window.open(`https://toolbox.google.com/factcheck/explorer/search/${query}`, '_blank');
