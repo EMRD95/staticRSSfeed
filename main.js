@@ -150,6 +150,13 @@ function displayArticles(articles) {
     const url = new URL(article.link);
     linkElement.textContent = url.hostname;
 
+    const factCheckButton = document.createElement('button');
+    factCheckButton.textContent = 'Fact Check';
+    factCheckButton.onclick = () => {
+      const query = encodeURIComponent(article.title);
+      window.open(`https://toolbox.google.com/factcheck/explorer/search/${query}`, '_blank');
+    };
+
     articleElement.appendChild(titleElement);
     articleElement.appendChild(thumbnailElement);
     articleElement.appendChild(faviconElement);
@@ -157,6 +164,7 @@ function displayArticles(articles) {
     articleElement.appendChild(dateElement);
     articleElement.appendChild(descriptionElement);
     articleElement.appendChild(linkElement);
+    articleElement.appendChild(factCheckButton); // Add the fact check button to the article
 
     articlesContainer.appendChild(articleElement);
   });
