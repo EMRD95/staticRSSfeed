@@ -133,6 +133,28 @@ overflow-wrap: break-word;
   margin-top: -2px;
 }
 
+.article .fact-check {
+  display: inline-block;
+  background-color: #444;
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 10px; /* reduced padding to make the button smaller */
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  margin-top: 15px; /* add some margin for spacing */
+  margin-left: 10px; /* add some margin to the left to create space between the article link and the button */
+  font-size: 0.9em; /* reduce font-size to make the button smaller */
+}
+
+.article .fact-check:hover {
+  background-color: #666;
+}
+
+.article .fact-check:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 6px #444;
+}
+
 
 @media (max-width: 768px) {
   h1 {
