@@ -33,6 +33,10 @@ function sanitizeHTML(htmlString) {
   textContent = textContent.replace(/#(\w+)/g, '$1');
   textContent = textContent.replace(/#\w+/g, '');
   textContent = textContent.replace('Source: thehackernews.com – Author: .', '');
+  
+  // Remove URLs
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  textContent = textContent.replace(urlRegex, '');
 
   return textContent;
 }
