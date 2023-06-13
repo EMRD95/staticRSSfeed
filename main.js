@@ -44,20 +44,19 @@ function sanitizeHTML(htmlString) {
 function extractThumbnailFromDescription(description) {
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
   const wpImageDivRegex = /<div class="wp-block-image">.*?<img.*?src="(.*?)".*?>.*?<\/div>/is;
-  
+
   let match = description.match(imgTagRegex);
   if (match) {
-    return match[1];
+    return match[1].replace('http://', 'https://'); // Update the protocol to HTTPS
   }
-  
+
   match = description.match(wpImageDivRegex);
   if (match) {
-    return match[1];
+    return match[1].replace('http://', 'https://'); // Update the protocol to HTTPS
   }
 
   return '';
 }
-
 
 function truncateDescription(description) {
   if (description.length > maxDescriptionLength) {
