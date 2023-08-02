@@ -241,8 +241,3 @@ overflow-wrap: break-word;
   background-color: #4caf50;
   transition: width 0.5s;
 }
-
-
-#progress-bar[style*="100"] {
-  display: none;
-}
