@@ -65,21 +65,26 @@ function truncateDescription(description) {
   return decodeHtmlEntities(description);
 }
 
+
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
   someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
   noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
 
-  const promises = feedUrls.map(url => {
+  const promises = feedUrls.map((url, index) => {
     const encodedUrl = encodeURIComponent(url);
     const feedApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}&api_key=${apiKey}`;
     return fetch(feedApiUrl).then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      // Update progress bar width after each API call
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = `${(index + 1) / feedUrls.length * 50}%`; // Loading phase is from 0 to 50%
       return response.json();
     });
   });
+
 
 Promise.allSettled(promises)
     .then(results => {
@@ -104,6 +109,8 @@ Promise.allSettled(promises)
         return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
       });
 
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
       displayArticles(filteredArticles);
     })
     .catch(error => console.error(error));
