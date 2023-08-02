@@ -86,7 +86,6 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   });
 
 
-
 Promise.allSettled(promises)
     .then(results => {
       let articles = results.flatMap(result =>
@@ -112,7 +111,7 @@ Promise.allSettled(promises)
 
       const progressBar = document.getElementById('progress-bar');
       progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
-      setTimeout(() => displayArticles(filteredArticles), 500); // delay added to allow for CSS transition
+      displayArticles(filteredArticles);
     })
     .catch(error => console.error(error));
 }
