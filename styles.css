@@ -242,3 +242,7 @@ overflow-wrap: break-word;
   transition: width 0.5s;
 }
 
+
+#progress-bar[style*="100"] {
+  display: none;
+}
