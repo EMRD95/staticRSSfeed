@@ -66,58 +66,7 @@ function truncateDescription(description) {
 }
 
 
-
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
-  const progressBar = document.getElementById('progress-bar');
-  progressBar.style.width = '0%';
-  allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
-  someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
-  noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
-
-  const promises = feedUrls.map((url, index) => {
-    const encodedUrl = encodeURIComponent(url);
-    const feedApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}&api_key=${apiKey}`;
-    return fetch(feedApiUrl).then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      // Update progress bar width after each API call
-      const progressBar = document.getElementById('progress-bar');
-      progressBar.style.width = `${(index + 1) / feedUrls.length * 100}%`;
-      return response.json();
-    });
-  });
-
-  Promise.allSettled(promises)
-    .then(results => {
-      let articles = results.flatMap(result =>
-        result.status === 'fulfilled' ? result.value.items : []
-      );
-      articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-      articles = articles.map(article => {
-        article.link = parseGoogleUrl(article.link); // update the link
-        article.faviconUrl = `https://www.google.com/s2/favicons?domain=${article.link}`; // update the faviconUrl
-        return article;
-      });
-
-      const filteredArticles = articles.filter(article => {
-        const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
-        const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
-
-        const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
-        const someKeywordsIncluded = someKeywords.length === 0 || someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
-        const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
-
-        return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
-      });
-
-      const progressBar = document.getElementById('progress-bar');
-      progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
-      displayArticles(filteredArticles);
-    })
-    .catch(error => console.error(error));
-}
-
   const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = '0%';
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
@@ -151,16 +100,21 @@ Promise.allSettled(promises)
         return article;
       });
 
-      const filteredArticles = articles.filter(article => {
-        const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
-        const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
+const filteredArticles = articles.filter(article => {
+  const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
+  const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
 
-        const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
-        const someKeywordsIncluded = someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
-        const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+  if (!allKeywords.length && !someKeywords.length && !noKeywords.length) {
+    return true; // No filtering, return all articles.
+  }
 
-        return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
-      });
+  const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
+  const someKeywordsIncluded = someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+  const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+
+  return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
+});
+
 
       const progressBar = document.getElementById('progress-bar');
       progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
@@ -244,3 +198,95 @@ function loadConfig() {
 }
 
 loadConfig();
+
+// Load keywords from config.json and populate input fields
+async function loadKeywordsFromConfig() {
+    try {
+        const response = await fetch(jsonConfigUrl);
+        const configData = await response.json();
+
+        // Populate input fields
+        document.getElementById('allKeywords').value = configData.allKeywords.join(', ');
+        document.getElementById('someKeywords').value = configData.someKeywords.join(', ');
+        document.getElementById('noKeywords').value = configData.noKeywords.join(', ');
+
+        // Load any saved changes from local storage
+        loadChangesFromLocalStorage();
+    } catch (error) {
+        console.error('Failed to load keywords from config.json:', error);
+    }
+}
+
+// Load saved changes from local storage and populate input fields
+function loadChangesFromLocalStorage() {
+    const allKeywords = localStorage.getItem('allKeywords');
+    const someKeywords = localStorage.getItem('someKeywords');
+    const noKeywords = localStorage.getItem('noKeywords');
+
+    if (allKeywords) {
+        document.getElementById('allKeywords').value = allKeywords;
+    }
+    if (someKeywords) {
+        document.getElementById('someKeywords').value = someKeywords;
+    }
+    if (noKeywords) {
+        document.getElementById('noKeywords').value = noKeywords;
+    }
+}
+
+// Event listener for the "Apply" button
+document.getElementById('applyChanges').addEventListener('click', () => {
+    // Save changes to local storage
+    localStorage.setItem('allKeywords', document.getElementById('allKeywords').value);
+    localStorage.setItem('someKeywords', document.getElementById('someKeywords').value);
+    localStorage.setItem('noKeywords', document.getElementById('noKeywords').value);
+
+    // Apply filtering logic to articles based on input fields (this functionality needs further integration)
+    // TODO: Implement article filtering logic
+});
+
+// Event listener for the "Reset" button
+document.getElementById('resetChanges').addEventListener('click', () => {
+    // Clear local storage
+    localStorage.removeItem('allKeywords');
+    localStorage.removeItem('someKeywords');
+    localStorage.removeItem('noKeywords');
+
+    // Revert to the default state by reloading keywords from config.json
+    loadKeywordsFromConfig();
+});
+
+// Invoke the function to load keywords from config.json upon page load
+loadKeywordsFromConfig();
+
+
+
+// Remove the redundant fetchAndRenderArticles function
+
+// Modify the "Apply" button's event listener to re-fetch and re-render articles using fetchArticles
+document.getElementById('applyChanges').addEventListener('click', () => {
+    // Save changes to local storage
+    localStorage.setItem('allKeywords', document.getElementById('allKeywords').value);
+    localStorage.setItem('someKeywords', document.getElementById('someKeywords').value);
+    localStorage.setItem('noKeywords', document.getElementById('noKeywords').value);
+
+    // Load config and re-fetch and re-render articles
+    loadConfig();
+});
+
+// Modify the loadConfig function to prioritize local storage over config.json for keywords
+function loadConfig() {
+  fetch(jsonConfigUrl)
+    .then(response => response.json())
+    .then(data => {
+      const feedUrls = data.feedUrls;
+
+      // Prioritize local storage over config.json for keywords
+      let allKeywords = localStorage.getItem('allKeywords') ? localStorage.getItem('allKeywords').split(',').map(keyword => keyword.trim()) : data.allKeywords;
+      let someKeywords = localStorage.getItem('someKeywords') ? localStorage.getItem('someKeywords').split(',').map(keyword => keyword.trim()) : data.someKeywords;
+      let noKeywords = localStorage.getItem('noKeywords') ? localStorage.getItem('noKeywords').split(',').map(keyword => keyword.trim()) : data.noKeywords;
+
+      fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
+    })
+    .catch(error => console.error(error));
+}
