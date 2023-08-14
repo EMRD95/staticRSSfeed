@@ -100,17 +100,16 @@ Promise.allSettled(promises)
         return article;
       });
 
-const filteredArticles = articles.filter(article => {
-  const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
-  const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
+      const filteredArticles = articles.filter(article => {
+        const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
+        const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
 
-  const allKeywordsIncluded = allKeywords.length ? allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword)) : true;
-  const someKeywordsIncluded = someKeywords.length ? someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword)) : true;
-  const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+        const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
+        const someKeywordsIncluded = someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+        const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
 
-  return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
-});
-
+        return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
+      });
 
       const progressBar = document.getElementById('progress-bar');
       progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
@@ -180,19 +179,14 @@ function displayArticles(articles) {
   });
 }
 
-let feedUrls = []; // Storing feedUrls at a higher scope
-
 function loadConfig() {
   fetch(jsonConfigUrl)
     .then(response => response.json())
     .then(data => {
-      feedUrls = data.feedUrls;
-
-      // Prioritize local storage over config.json for keywords
-      let allKeywords = localStorage.getItem('allKeywords') ? localStorage.getItem('allKeywords').split(',').map(keyword => keyword.trim()) : data.allKeywords;
-      let someKeywords = localStorage.getItem('someKeywords') ? localStorage.getItem('someKeywords').split(',').map(keyword => keyword.trim()) : data.someKeywords;
-      let noKeywords = localStorage.getItem('noKeywords') ? localStorage.getItem('noKeywords').split(',').map(keyword => keyword.trim()) : data.noKeywords;
-
+      const feedUrls = data.feedUrls;
+      const allKeywords = data.allKeywords || [];
+      const someKeywords = data.someKeywords || [];
+      const noKeywords = data.noKeywords || [];
       fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
     })
     .catch(error => console.error(error));
@@ -242,11 +236,8 @@ document.getElementById('applyChanges').addEventListener('click', () => {
     localStorage.setItem('someKeywords', document.getElementById('someKeywords').value);
     localStorage.setItem('noKeywords', document.getElementById('noKeywords').value);
 
-    // Re-fetch and re-render articles using saved keywords
-    let allKeywords = localStorage.getItem('allKeywords').split(',').map(keyword => keyword.trim());
-    let someKeywords = localStorage.getItem('someKeywords').split(',').map(keyword => keyword.trim());
-    let noKeywords = localStorage.getItem('noKeywords').split(',').map(keyword => keyword.trim());
-    fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
+    // Apply filtering logic to articles based on input fields (this functionality needs further integration)
+    // TODO: Implement article filtering logic
 });
 
 // Event listener for the "Reset" button
