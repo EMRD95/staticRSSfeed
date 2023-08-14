@@ -1,4 +1,3 @@
-const progressBar = document.getElementById('progress-bar');
 const apiKey = 'ftukbsji3qqrpl4nwiftgmsh7c2inufrg1fabpi1';
 const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=&api_key=${apiKey}`;
 const jsonConfigUrl = 'config.json';
@@ -70,6 +69,8 @@ function truncateDescription(description) {
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = '0%';
+  const progressBar = document.getElementById('progress-bar');
+  progressBar.style.width = '0%';
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
   someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
   noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
@@ -116,7 +117,7 @@ Promise.allSettled(promises)
       progressBar.style.width = '100%';
       displayArticles(filteredArticles);
 
-// Removed redundant declaration: progressBar = document.getElementById('progress-bar');
+const progressBar = document.getElementById('progress-bar');
 progressBar.style.display = 'none';
 
     })
