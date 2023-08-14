@@ -194,68 +194,6 @@ function loadConfig() {
 
 loadConfig();
 
-// Load keywords from config.json and populate input fields
-async function loadKeywordsFromConfig() {
-    try {
-        const response = await fetch(jsonConfigUrl);
-        const configData = await response.json();
-
-        // Populate input fields
-        document.getElementById('allKeywords').value = configData.allKeywords.join(', ');
-        document.getElementById('someKeywords').value = configData.someKeywords.join(', ');
-        document.getElementById('noKeywords').value = configData.noKeywords.join(', ');
-
-        // Load any saved changes from local storage
-        loadChangesFromLocalStorage();
-    } catch (error) {
-        console.error('Failed to load keywords from config.json:', error);
-    }
-}
-
-// Load saved changes from local storage and populate input fields
-function loadChangesFromLocalStorage() {
-    const allKeywords = localStorage.getItem('allKeywords');
-    const someKeywords = localStorage.getItem('someKeywords');
-    const noKeywords = localStorage.getItem('noKeywords');
-
-    if (allKeywords) {
-        document.getElementById('allKeywords').value = allKeywords;
-    }
-    if (someKeywords) {
-        document.getElementById('someKeywords').value = someKeywords;
-    }
-    if (noKeywords) {
-        document.getElementById('noKeywords').value = noKeywords;
-    }
-}
-
-// Event listener for the "Apply" button
-document.getElementById('applyChanges').addEventListener('click', () => {
-    // Save changes to local storage
-    localStorage.setItem('allKeywords', document.getElementById('allKeywords').value);
-    localStorage.setItem('someKeywords', document.getElementById('someKeywords').value);
-    localStorage.setItem('noKeywords', document.getElementById('noKeywords').value);
-
-    // Apply filtering logic to articles based on input fields (this functionality needs further integration)
-    // TODO: Implement article filtering logic
-});
-
-// Event listener for the "Reset" button
-document.getElementById('resetChanges').addEventListener('click', () => {
-    // Clear local storage
-    localStorage.removeItem('allKeywords');
-    localStorage.removeItem('someKeywords');
-    localStorage.removeItem('noKeywords');
-
-    // Revert to the default state by reloading keywords from config.json
-    loadKeywordsFromConfig();
-});
-
-// Invoke the function to load keywords from config.json upon page load
-loadKeywordsFromConfig();
-
-
-
 // Filter articles based on keywords
 function filterArticles(articles) {
     const allKeywords = document.getElementById('allKeywords').value.split(',').map(keyword => keyword.trim().toLowerCase());
@@ -304,5 +242,46 @@ async function fetchAndRenderArticles() {
 document.getElementById('applyChanges').addEventListener('click', () => {
     // ... (existing code to save changes to local storage)
     fetchAndRenderArticles();  // Re-fetch and re-render articles after filtering
+});
+
+
+
+// Refactor the fetchArticles function to accept custom keywords
+function fetchArticles(feedUrls, allKeywords = [], someKeywords = [], noKeywords = []) {
+    // ... (existing code remains unchanged)
+
+    // Use the filteredArticles for the display
+    displayArticles(filteredArticles);
+}
+
+// Modify the event listener for the "Apply" button
+document.getElementById('applyChanges').addEventListener('click', () => {
+    // Save changes to local storage
+    localStorage.setItem('allKeywords', document.getElementById('allKeywords').value);
+    localStorage.setItem('someKeywords', document.getElementById('someKeywords').value);
+    localStorage.setItem('noKeywords', document.getElementById('noKeywords').value);
+    
+    // Fetch the feedUrls from the config
+    fetch(jsonConfigUrl)
+    .then(response => response.json())
+    .then(data => {
+        const feedUrls = data.feedUrls;
+        const allKeywords = document.getElementById('allKeywords').value.split(',').map(kw => kw.trim());
+        const someKeywords = document.getElementById('someKeywords').value.split(',').map(kw => kw.trim());
+        const noKeywords = document.getElementById('noKeywords').value.split(',').map(kw => kw.trim());
+        fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
+    });
+});
+
+// Modify the event listener for the "Reset" button
+document.getElementById('resetChanges').addEventListener('click', () => {
+    // Clear local storage
+    localStorage.removeItem('allKeywords');
+    localStorage.removeItem('someKeywords');
+    localStorage.removeItem('noKeywords');
+
+    // Revert to the default state by reloading keywords from config.json and fetch articles
+    loadConfig();
+    loadKeywordsFromConfig();
 });
 
