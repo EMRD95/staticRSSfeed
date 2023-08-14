@@ -67,116 +67,129 @@ function truncateDescription(description) {
 
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
+  const progressBar = document.getElementById('progress-bar');
+  progressBar.style.width = '0%';
+  allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
+  someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
+  noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
 
-function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
-    const progressBar = document.getElementById('progress-bar');
-    progressBar.style.width = '0%';
-    allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
-    someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
-    noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
-
-    const promises = feedUrls.map((url, index) => {
-        const encodedUrl = encodeURIComponent(url);
-        const feedApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}&api_key=${apiKey}`;
-        return fetch(feedApiUrl).then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = `${(index + 1) / feedUrls.length * 100}%`;
-            return response.json();
-        });
+  const promises = feedUrls.map((url, index) => {
+    const encodedUrl = encodeURIComponent(url);
+    const feedApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}&api_key=${apiKey}`;
+    return fetch(feedApiUrl).then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      // Update progress bar width after each API call
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = `${(index + 1) / feedUrls.length * 100}%`;
+      return response.json();
     });
+  });
 
-    Promise.allSettled(promises)
-        .then(results => {
-            let articles = results.flatMap(result =>
-                result.status === 'fulfilled' ? result.value.items : []
-            );
-            articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-            articles = articles.map(article => {
-                article.link = parseGoogleUrl(article.link);
-                article.faviconUrl = `https://www.google.com/s2/favicons?domain=${article.link}`;
-                return article;
-            });
 
-            const filteredArticles = articles.filter(article => {
-                const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
-                const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
+Promise.allSettled(promises)
+    .then(results => {
+      let articles = results.flatMap(result =>
+        result.status === 'fulfilled' ? result.value.items : []
+      );
+      articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+      articles = articles.map(article => {
+        article.link = parseGoogleUrl(article.link); // update the link
+        article.faviconUrl = `https://www.google.com/s2/favicons?domain=${article.link}`; // update the faviconUrl
+        return article;
+      });
 
-                const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
-                const someKeywordsIncluded = someKeywords.length > 0 ? someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword)) : true;
-                const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+      const filteredArticles = articles.filter(article => {
+        const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
+        const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
 
-                return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
-            });
+        const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
+        const someKeywordsIncluded = someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+        const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
 
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = '100%';
-            displayArticles(filteredArticles);
-        })
-        .catch(error => console.error(error));
+        return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
+      });
+
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
+      displayArticles(filteredArticles);
+    })
+    .catch(error => console.error(error));
 }
 
+function displayArticles(articles) {
+  const articlesContainer = document.getElementById('articles');
+  articlesContainer.innerHTML = '';
 
+  articles.forEach(article => {
+    const articleElement = document.createElement('div');
+    articleElement.classList.add('article');
 
-// Load keywords from config.json and populate input fields
-async function loadKeywordsFromConfig() {
-    try {
-        const response = await fetch(jsonConfigUrl);
-        const configData = await response.json();
+    const titleElement = document.createElement('h2');
+    const sanitizedTitle = sanitizeHTML(article.title).replace(/<.*?>/g, '');
+    titleElement.textContent = decodeHtmlEntities(sanitizedTitle);
+	  
+    const thumbnailElement = document.createElement('img');
+    thumbnailElement.classList.add('thumbnail');
+    thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description);
 
-        // Populate input fields
-        document.getElementById('allKeywords').value = configData.allKeywords.join(', ');
-        document.getElementById('someKeywords').value = configData.someKeywords.join(', ');
-        document.getElementById('noKeywords').value = configData.noKeywords.join(', ');
+    const faviconElement = document.createElement('img');
+    faviconElement.classList.add('favicon');
+    faviconElement.src = article.faviconUrl;
 
-        // Load any saved changes from local storage
-        loadChangesFromLocalStorage();
-    } catch (error) {
-        console.error('Failed to load keywords from config.json:', error);
+    const sourceElement = document.createElement('p');
+    if (article.author || article.creator) {
+    sourceElement.textContent = `Source: ${decodeHtmlEntities(article.author) || decodeHtmlEntities(article.creator)}`;
     }
+
+    const dateElement = document.createElement('p');
+    dateElement.textContent = formatDate(article.pubDate);
+
+    const descriptionElement = document.createElement('p');
+	const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
+    descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
+
+
+    const linkElement = document.createElement('a');
+    linkElement.href = article.link;
+    linkElement.classList.add('article-link');
+    linkElement.target = '_blank';
+    const url = new URL(article.link);
+    linkElement.textContent = url.hostname;
+
+    const factCheckButton = document.createElement('button');
+    factCheckButton.textContent = '🤔';
+	factCheckButton.classList.add('fact-check'); // Add the new class
+    factCheckButton.onclick = () => {
+	const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
+	window.open(`https://www.google.com/search?q=${query}`, '_blank');
+    };
+
+    articleElement.appendChild(titleElement);
+    articleElement.appendChild(thumbnailElement);
+    articleElement.appendChild(faviconElement);
+    articleElement.appendChild(sourceElement);
+    articleElement.appendChild(dateElement);
+    articleElement.appendChild(descriptionElement);
+    articleElement.appendChild(linkElement);
+    articleElement.appendChild(factCheckButton); // Add the fact check button to the article
+
+    articlesContainer.appendChild(articleElement);
+  });
 }
 
-// Load saved changes from local storage and populate input fields
-function loadChangesFromLocalStorage() {
-    const allKeywords = localStorage.getItem('allKeywords');
-    const someKeywords = localStorage.getItem('someKeywords');
-    const noKeywords = localStorage.getItem('noKeywords');
-
-    if (allKeywords) {
-        document.getElementById('allKeywords').value = allKeywords;
-    }
-    if (someKeywords) {
-        document.getElementById('someKeywords').value = someKeywords;
-    }
-    if (noKeywords) {
-        document.getElementById('noKeywords').value = noKeywords;
-    }
+function loadConfig() {
+  fetch(jsonConfigUrl)
+    .then(response => response.json())
+    .then(data => {
+      const feedUrls = data.feedUrls;
+      const allKeywords = data.allKeywords || [];
+      const someKeywords = data.someKeywords || [];
+      const noKeywords = data.noKeywords || [];
+      fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
+    })
+    .catch(error => console.error(error));
 }
 
-// Event listener for the "Apply" button
-document.getElementById('applyChanges').addEventListener('click', () => {
-    // Save changes to local storage
-    localStorage.setItem('allKeywords', document.getElementById('allKeywords').value);
-    localStorage.setItem('someKeywords', document.getElementById('someKeywords').value);
-    localStorage.setItem('noKeywords', document.getElementById('noKeywords').value);
-
-    // Apply filtering logic to articles based on input fields (this functionality needs further integration)
-    // TODO: Implement article filtering logic
-});
-
-// Event listener for the "Reset" button
-document.getElementById('resetChanges').addEventListener('click', () => {
-    // Clear local storage
-    localStorage.removeItem('allKeywords');
-    localStorage.removeItem('someKeywords');
-    localStorage.removeItem('noKeywords');
-
-    // Revert to the default state by reloading keywords from config.json
-    loadKeywordsFromConfig();
-});
-
-// Invoke the function to load keywords from config.json upon page load
-loadKeywordsFromConfig();
-
+loadConfig();
