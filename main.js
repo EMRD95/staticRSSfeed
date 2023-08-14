@@ -66,12 +66,15 @@ function truncateDescription(description) {
 }
 
 
+
+
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = '0%';
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
   someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
   noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
+
   const promises = feedUrls.map((url, index) => {
     const encodedUrl = encodeURIComponent(url);
     const feedApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}&api_key=${apiKey}`;
@@ -85,6 +88,7 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
       return response.json();
     });
   });
+
 Promise.allSettled(promises)
     .then(results => {
       let articles = results.flatMap(result =>
@@ -96,20 +100,26 @@ Promise.allSettled(promises)
         article.faviconUrl = `https://www.google.com/s2/favicons?domain=${article.link}`; // update the faviconUrl
         return article;
       });
+
       const filteredArticles = articles.filter(article => {
         const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
         const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
+
         const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
         const someKeywordsIncluded = someKeywords.length === 0 || someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
         const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+
         return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
       });
+
       const progressBar = document.getElementById('progress-bar');
       progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
       displayArticles(filteredArticles);
     })
     .catch(error => console.error(error));
 }
+
+
   const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = '0%';
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
@@ -159,7 +169,7 @@ Promise.allSettled(promises)
       displayArticles(filteredArticles);
     })
     .catch(error => console.error(error));
-}
+
 
 function displayArticles(articles) {
   const articlesContainer = document.getElementById('articles');
