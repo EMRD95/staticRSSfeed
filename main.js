@@ -16,7 +16,6 @@ function decodeHtmlEntities(text) {
   return textArea.value;
 }
 
-
 function parseGoogleUrl(url) {
   if (url.includes('www.google.com/url')) {
     const params = new URLSearchParams(url.split('?')[1]);
@@ -42,24 +41,14 @@ function sanitizeHTML(htmlString) {
   return textContent;
 }
 
-
 function extractThumbnailFromDescription(description) {
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
   const wpImageDivRegex = /<div class="wp-block-image">.*?<img.*?src="(.*?)".*?>.*?<\/div>/is;
 
   let match = description.match(imgTagRegex);
   if (match) {
-    return match[1].replace('http://', 'https://');
+    return match[1].replace('http://', 'https://'); // Update the protocol to HTTPS
   }
-
-  match = description.match(wpImageDivRegex);
-  if (match) {
-    return match[1].replace('http://', 'https://');
-  }
-
-  return '';
-}
-
 
   match = description.match(wpImageDivRegex);
   if (match) {
