@@ -41,13 +41,20 @@ function sanitizeHTML(htmlString) {
   return textContent;
 }
 
-function extractThumbnailFromDescription(description) {
+function extractThumbnailFromDescription(description, link) {
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
   const wpImageDivRegex = /<div class="wp-block-image">.*?<img.*?src="(.*?)".*?>.*?<\/div>/is;
 
   let match = description.match(imgTagRegex);
   if (match) {
-    return match[1].replace('http://', 'https://'); // Update the protocol to HTTPS
+    const imageUrl = match[1];
+    if (imageUrl.includes('i.4cdn.org')) {
+      const board = link.split('/')[3];
+      const threadNum = link.split('/')[5];
+      return `https://i.4cdn.org/${board}/${threadNum}s.jpg`; // Using 4chan's thumbnail naming convention
+    } else {
+      return imageUrl.replace('http://', 'https://'); // Update the protocol to HTTPS for non-4chan images
+    }
   }
 
   match = description.match(wpImageDivRegex);
@@ -57,6 +64,7 @@ function extractThumbnailFromDescription(description) {
 
   return '';
 }
+
 
 function truncateDescription(description) {
   if (description.length > maxDescriptionLength) {
