@@ -24,7 +24,6 @@ function parseGoogleUrl(url) {
   return url;
 }
 
-
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
   tempElement.innerHTML = decodeHtmlEntities(htmlString);
@@ -67,138 +66,59 @@ function truncateDescription(description) {
 }
 
 
-
+function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
-  const progressBar = document.getElementById('progress-bar');
-  progressBar.style.width = '0%';
-  allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
-  someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
-  noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
+    const progressBar = document.getElementById('progress-bar');
+    progressBar.style.width = '0%';
+    allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
+    someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
+    noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
 
-  const promises = feedUrls.map((url, index) => {
-    const encodedUrl = encodeURIComponent(url);
-    const feedApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}&api_key=${apiKey}`;
-    return fetch(feedApiUrl).then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const progressBar = document.getElementById('progress-bar');
-      progressBar.style.width = `${(index + 1) / feedUrls.length * 100}%`;
-      return response.json();
+    const promises = feedUrls.map((url, index) => {
+        const encodedUrl = encodeURIComponent(url);
+        const feedApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}&api_key=${apiKey}`;
+        return fetch(feedApiUrl).then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${(index + 1) / feedUrls.length * 100}%`;
+            return response.json();
+        });
     });
-  });
 
-  Promise.allSettled(promises)
-    .then(results => {
-      let articles = results.flatMap(result =>
-        result.status === 'fulfilled' ? result.value.items : []
-      );
-      articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-      articles = articles.map(article => {
-        article.link = parseGoogleUrl(article.link); // update the link
-        article.faviconUrl = `https://www.google.com/s2/favicons?domain=${article.link}`; // update the faviconUrl
-        return article;
-      });
+    Promise.allSettled(promises)
+        .then(results => {
+            let articles = results.flatMap(result =>
+                result.status === 'fulfilled' ? result.value.items : []
+            );
+            articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+            articles = articles.map(article => {
+                article.link = parseGoogleUrl(article.link);
+                article.faviconUrl = `https://www.google.com/s2/favicons?domain=${article.link}`;
+                return article;
+            });
 
-      const filteredArticles = articles.filter(article => {
-        const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
-        const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
+            const filteredArticles = articles.filter(article => {
+                const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
+                const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
 
-        const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
-        const someKeywordsIncluded = someKeywords.length > 0 ? someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword)) : true;
-        const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+                const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
+                const someKeywordsIncluded = someKeywords.length > 0 ? someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword)) : true;
+                const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
 
-        return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
-      });
+                return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
+            });
 
-      const progressBar = document.getElementById('progress-bar');
-      progressBar.style.width = '100%';
-      displayArticles(filteredArticles);
-    })
-    .catch(error => console.error(error));
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '100%';
+            displayArticles(filteredArticles);
+        })
+        .catch(error => console.error(error));
 }
 
 
-    })
-    .catch(error => console.error(error));
-}
-
-function displayArticles(articles) {
-  const articlesContainer = document.getElementById('articles');
-  articlesContainer.innerHTML = '';
-
-  articles.forEach(article => {
-    const articleElement = document.createElement('div');
-    articleElement.classList.add('article');
-
-    const titleElement = document.createElement('h2');
-    const sanitizedTitle = sanitizeHTML(article.title).replace(/<.*?>/g, '');
-    titleElement.textContent = decodeHtmlEntities(sanitizedTitle);
-	  
-    const thumbnailElement = document.createElement('img');
-    thumbnailElement.classList.add('thumbnail');
-    thumbnailElement.src = article.thumbnail || extractThumbnailFromDescription(article.description);
-
-    const faviconElement = document.createElement('img');
-    faviconElement.classList.add('favicon');
-    faviconElement.src = article.faviconUrl;
-
-    const sourceElement = document.createElement('p');
-    if (article.author || article.creator) {
-    sourceElement.textContent = `Source: ${decodeHtmlEntities(article.author) || decodeHtmlEntities(article.creator)}`;
-    }
-
-    const dateElement = document.createElement('p');
-    dateElement.textContent = formatDate(article.pubDate);
-
-    const descriptionElement = document.createElement('p');
-	const sanitizedDescription = sanitizeHTML(article.description).replace(/<.*?>/g, '');
-    descriptionElement.textContent = decodeHtmlEntities(truncateDescription(sanitizedDescription));
-
-
-    const linkElement = document.createElement('a');
-    linkElement.href = article.link;
-    linkElement.classList.add('article-link');
-    linkElement.target = '_blank';
-    const url = new URL(article.link);
-    linkElement.textContent = url.hostname;
-
-    const factCheckButton = document.createElement('button');
-    factCheckButton.textContent = '🤔';
-	factCheckButton.classList.add('fact-check'); // Add the new class
-    factCheckButton.onclick = () => {
-	const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
-	window.open(`https://www.google.com/search?q=${query}`, '_blank');
-    };
-
-    articleElement.appendChild(titleElement);
-    articleElement.appendChild(thumbnailElement);
-    articleElement.appendChild(faviconElement);
-    articleElement.appendChild(sourceElement);
-    articleElement.appendChild(dateElement);
-    articleElement.appendChild(descriptionElement);
-    articleElement.appendChild(linkElement);
-    articleElement.appendChild(factCheckButton); // Add the fact check button to the article
-
-    articlesContainer.appendChild(articleElement);
-  });
-}
-
-function loadConfig() {
-  fetch(jsonConfigUrl)
-    .then(response => response.json())
-    .then(data => {
-      const feedUrls = data.feedUrls;
-      const allKeywords = data.allKeywords || [];
-      const someKeywords = data.someKeywords || [];
-      const noKeywords = data.noKeywords || [];
-      fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
-    })
-    .catch(error => console.error(error));
-}
-
-loadConfig();
 
 // Load keywords from config.json and populate input fields
 async function loadKeywordsFromConfig() {
@@ -259,36 +179,4 @@ document.getElementById('resetChanges').addEventListener('click', () => {
 
 // Invoke the function to load keywords from config.json upon page load
 loadKeywordsFromConfig();
-
-
-
-// Remove the redundant fetchAndRenderArticles function
-
-// Modify the "Apply" button's event listener to re-fetch and re-render articles using fetchArticles
-document.getElementById('applyChanges').addEventListener('click', () => {
-    // Save changes to local storage
-    localStorage.setItem('allKeywords', document.getElementById('allKeywords').value);
-    localStorage.setItem('someKeywords', document.getElementById('someKeywords').value);
-    localStorage.setItem('noKeywords', document.getElementById('noKeywords').value);
-
-    // Load config and re-fetch and re-render articles
-    loadConfig();
-});
-
-// Modify the loadConfig function to prioritize local storage over config.json for keywords
-function loadConfig() {
-  fetch(jsonConfigUrl)
-    .then(response => response.json())
-    .then(data => {
-      const feedUrls = data.feedUrls;
-
-      // Prioritize local storage over config.json for keywords
-      let allKeywords = localStorage.getItem('allKeywords') ? localStorage.getItem('allKeywords').split(',').map(keyword => keyword.trim()) : data.allKeywords;
-      let someKeywords = localStorage.getItem('someKeywords') ? localStorage.getItem('someKeywords').split(',').map(keyword => keyword.trim()) : data.someKeywords;
-      let noKeywords = localStorage.getItem('noKeywords') ? localStorage.getItem('noKeywords').split(',').map(keyword => keyword.trim()) : data.noKeywords;
-
-      fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
-    })
-    .catch(error => console.error(error));
-}
 
