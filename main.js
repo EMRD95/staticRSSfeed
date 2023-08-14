@@ -66,6 +66,8 @@ function truncateDescription(description) {
 }
 
 
+
+
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = '0%';
@@ -80,15 +82,13 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      // Update progress bar width after each API call
       const progressBar = document.getElementById('progress-bar');
       progressBar.style.width = `${(index + 1) / feedUrls.length * 100}%`;
       return response.json();
     });
   });
 
-
-Promise.allSettled(promises)
+  Promise.allSettled(promises)
     .then(results => {
       let articles = results.flatMap(result =>
         result.status === 'fulfilled' ? result.value.items : []
@@ -105,15 +105,20 @@ Promise.allSettled(promises)
         const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
 
         const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
-        const someKeywordsIncluded = someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+        const someKeywordsIncluded = someKeywords.length > 0 ? someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword)) : true;
         const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
 
         return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
       });
 
       const progressBar = document.getElementById('progress-bar');
-      progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
+      progressBar.style.width = '100%';
       displayArticles(filteredArticles);
+    })
+    .catch(error => console.error(error));
+}
+
+
     })
     .catch(error => console.error(error));
 }
