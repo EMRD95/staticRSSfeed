@@ -116,7 +116,7 @@ Promise.allSettled(promises)
       progressBar.style.width = '100%';
       displayArticles(filteredArticles);
 
-const progressBar = document.getElementById('progress-bar');
+// Removed redundant declaration: progressBar = document.getElementById('progress-bar');
 progressBar.style.display = 'none';
 
     })
