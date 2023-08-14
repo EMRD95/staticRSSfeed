@@ -67,6 +67,8 @@ function truncateDescription(description) {
 
 
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
+  const progressBar = document.getElementById('progress-bar');
+  progressBar.style.width = '0%';
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
   someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
   noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
@@ -80,7 +82,7 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
       }
       // Update progress bar width after each API call
       const progressBar = document.getElementById('progress-bar');
-      progressBar.style.width = `${(index + 1) / feedUrls.length * 50}%`; // Loading phase is from 0 to 50%
+      progressBar.style.width = `${(index + 1) / feedUrls.length * 100}%`;
       return response.json();
     });
   });
@@ -161,7 +163,7 @@ function displayArticles(articles) {
 	factCheckButton.classList.add('fact-check'); // Add the new class
     factCheckButton.onclick = () => {
 	const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
-	window.open(`https://toolbox.google.com/factcheck/explorer/search/${query};hl=`, '_blank');
+	window.open(`https://www.google.com/search?q=${query}`, '_blank');
     };
 
     articleElement.appendChild(titleElement);
