@@ -16,6 +16,7 @@ function decodeHtmlEntities(text) {
   return textArea.value;
 }
 
+
 function parseGoogleUrl(url) {
   if (url.includes('www.google.com/url')) {
     const params = new URLSearchParams(url.split('?')[1]);
