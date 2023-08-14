@@ -114,6 +114,10 @@ Promise.allSettled(promises)
       const progressBar = document.getElementById('progress-bar');
       progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
       displayArticles(filteredArticles);
+
+const progressBar = document.getElementById('progress-bar');
+progressBar.style.display = 'none';
+
     })
     .catch(error => console.error(error));
 }
