@@ -24,6 +24,7 @@ function parseGoogleUrl(url) {
   return url;
 }
 
+
 function sanitizeHTML(htmlString) {
   const tempElement = document.createElement('div');
   tempElement.innerHTML = decodeHtmlEntities(htmlString);
