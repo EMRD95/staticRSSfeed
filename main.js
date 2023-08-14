@@ -69,8 +69,6 @@ function truncateDescription(description) {
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = '0%';
-  const progressBar = document.getElementById('progress-bar');
-  progressBar.style.width = '0%';
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
   someKeywords = someKeywords.map(keyword => keyword.toLowerCase());
   noKeywords = noKeywords.map(keyword => keyword.toLowerCase());
@@ -114,20 +112,10 @@ Promise.allSettled(promises)
       });
 
       const progressBar = document.getElementById('progress-bar');
-      progressBar.style.width = '100%';
+      progressBar.style.width = '100%'; // Filtering phase is from 50 to 100%
       displayArticles(filteredArticles);
-
-const progressBar = document.getElementById('progress-bar');
-progressBar.style.display = 'none';
-
     })
-    .catch(error => {
-    console.error('Error fetching articles:', error);
-    const progressBar = document.getElementById('progress-bar');
-    progressBar.style.backgroundColor = 'red'; // Change color to indicate error
-    progressBar.style.width = '100%';
-    setTimeout(() => { progressBar.style.display = 'none'; }, 2000); // Hide after a short delay
-});
+    .catch(error => console.error(error));
 }
 
 function displayArticles(articles) {
@@ -201,13 +189,7 @@ function loadConfig() {
       const noKeywords = data.noKeywords || [];
       fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords);
     })
-    .catch(error => {
-    console.error('Error fetching articles:', error);
-    const progressBar = document.getElementById('progress-bar');
-    progressBar.style.backgroundColor = 'red'; // Change color to indicate error
-    progressBar.style.width = '100%';
-    setTimeout(() => { progressBar.style.display = 'none'; }, 2000); // Hide after a short delay
-});
+    .catch(error => console.error(error));
 }
 
 loadConfig();
