@@ -254,3 +254,55 @@ document.getElementById('resetChanges').addEventListener('click', () => {
 // Invoke the function to load keywords from config.json upon page load
 loadKeywordsFromConfig();
 
+
+
+// Filter articles based on keywords
+function filterArticles(articles) {
+    const allKeywords = document.getElementById('allKeywords').value.split(',').map(keyword => keyword.trim().toLowerCase());
+    const someKeywords = document.getElementById('someKeywords').value.split(',').map(keyword => keyword.trim().toLowerCase());
+    const noKeywords = document.getElementById('noKeywords').value.split(',').map(keyword => keyword.trim().toLowerCase());
+
+    return articles.filter(article => {
+        const content = (article.title + ' ' + article.description).toLowerCase();
+
+        // If allKeywords are present, they must all exist in the content
+        for (let keyword of allKeywords) {
+            if (keyword && !content.includes(keyword)) {
+                return false;
+            }
+        }
+
+        // If someKeywords are present, at least one of them must exist in the content
+        if (someKeywords.some(keyword => keyword && content.includes(keyword))) {
+            return true;
+        }
+
+        // If noKeywords are present, none of them should exist in the content
+        for (let keyword of noKeywords) {
+            if (keyword && content.includes(keyword)) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+}
+
+// Modify the existing code that fetches and renders articles to integrate the filtering
+// Assuming there's a function that fetches articles and renders them, we'll modify that function to apply filtering
+// For demonstration purposes, we'll name that function 'fetchAndRenderArticles' (you might need to adjust based on actual function name)
+
+async function fetchAndRenderArticles() {
+    // ... (existing code to fetch articles)
+    // Let's say 'fetchedArticles' is the variable holding the fetched articles
+
+    const filteredArticles = filterArticles(fetchedArticles);
+    // ... (existing code to render 'filteredArticles')
+}
+
+// Modify the event listener for the "Apply" button to re-fetch and re-render articles after filtering
+document.getElementById('applyChanges').addEventListener('click', () => {
+    // ... (existing code to save changes to local storage)
+    fetchAndRenderArticles();  // Re-fetch and re-render articles after filtering
+});
+
