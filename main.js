@@ -104,12 +104,8 @@ const filteredArticles = articles.filter(article => {
   const title = sanitizeHTML(article.title).replace(/<.*?>/g, '').toLowerCase();
   const description = sanitizeHTML(article.description).replace(/<.*?>/g, '').toLowerCase();
 
-  if (!allKeywords.length && !someKeywords.length && !noKeywords.length) {
-    return true; // No filtering, return all articles.
-  }
-
-  const allKeywordsIncluded = allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword));
-  const someKeywordsIncluded = someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
+  const allKeywordsIncluded = allKeywords.length ? allKeywords.every(keyword => title.includes(keyword) || description.includes(keyword)) : true;
+  const someKeywordsIncluded = someKeywords.length ? someKeywords.some(keyword => title.includes(keyword) || description.includes(keyword)) : true;
   const noKeywordsIncluded = noKeywords.some(keyword => title.includes(keyword) || description.includes(keyword));
 
   return allKeywordsIncluded && someKeywordsIncluded && !noKeywordsIncluded;
