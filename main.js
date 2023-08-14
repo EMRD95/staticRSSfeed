@@ -41,28 +41,37 @@ function sanitizeHTML(htmlString) {
   return textContent;
 }
 
-function extractThumbnailFromDescription(description, link) {
-  const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
-  const wpImageDivRegex = /<div class="wp-block-image">.*?<img.*?src="(.*?)".*?>.*?<\/div>/is;
-
-  let match = description.match(imgTagRegex);
-  if (match) {
-    const imageUrl = match[1];
-    if (imageUrl.includes('i.4cdn.org')) {
-      const board = link.split('/')[3];
-      const threadNum = link.split('/')[5];
-      return `https://i.4cdn.org/${board}/${threadNum}s.jpg`; // Using 4chan's thumbnail naming convention
-    } else {
-      return imageUrl.replace('http://', 'https://'); // Update the protocol to HTTPS for non-4chan images
+async function get4chanThumbnail(link) {
+    const board = link.split('/')[3];
+    const threadNum = link.split('/')[5];
+    const apiURL = `https://a.4cdn.org/${board}/thread/${threadNum}.json`;
+    try {
+        const response = await fetch(apiURL);
+        const data = await response.json();
+        if (data.posts && data.posts.length) {
+            const post = data.posts[0];
+            if (post.tim && post.ext) {
+                return `https://i.4cdn.org/${board}/${post.tim}s.jpg`;
+            }
+        }
+    } catch (error) {
+        console.error(`Error fetching 4chan thumbnail for ${link}:`, error);
     }
-  }
+    return '';
+}
 
-  match = description.match(wpImageDivRegex);
-  if (match) {
-    return match[1].replace('http://', 'https://'); // Update the protocol to HTTPS
-  }
-
-  return '';
+async function extractThumbnailFromDescription(description, link) {
+    const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
+    let match = description.match(imgTagRegex);
+    if (match) {
+        const imageUrl = match[1];
+        if (imageUrl.includes('i.4cdn.org') && link.includes('boards.4chan.org')) {
+            return await get4chanThumbnail(link);
+        } else {
+            return imageUrl.replace('http://', 'https://');
+        }
+    }
+    return '';
 }
 
 
