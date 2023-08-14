@@ -193,3 +193,48 @@ function loadConfig() {
 }
 
 loadConfig();
+// Load initial keywords from config.json and populate input fields
+function loadInitialKeywords() {
+    const allKeywordsInput = document.getElementById("allKeywords");
+    const someKeywordsInput = document.getElementById("someKeywords");
+    const noKeywordsInput = document.getElementById("noKeywords");
+    
+    if (localStorage.getItem("allKeywords")) {
+        allKeywordsInput.value = localStorage.getItem("allKeywords");
+    } else {
+        allKeywordsInput.value = config.allKeywords.join(", ");
+    }
+    
+    if (localStorage.getItem("someKeywords")) {
+        someKeywordsInput.value = localStorage.getItem("someKeywords");
+    } else {
+        someKeywordsInput.value = config.someKeywords.join(", ");
+    }
+    
+    if (localStorage.getItem("noKeywords")) {
+        noKeywordsInput.value = localStorage.getItem("noKeywords");
+    } else {
+        noKeywordsInput.value = config.noKeywords.join(", ");
+    }
+}
+
+// Save changes to local storage and reflect changes immediately
+function handleKeywordChange() {
+    const allKeywordsInput = document.getElementById("allKeywords");
+    const someKeywordsInput = document.getElementById("someKeywords");
+    const noKeywordsInput = document.getElementById("noKeywords");
+    
+    localStorage.setItem("allKeywords", allKeywordsInput.value);
+    localStorage.setItem("someKeywords", someKeywordsInput.value);
+    localStorage.setItem("noKeywords", noKeywordsInput.value);
+    
+    // TODO: Refresh or filter the articles based on the new keywords
+}
+
+// Add event listeners to the input fields
+document.getElementById("allKeywords").addEventListener("input", handleKeywordChange);
+document.getElementById("someKeywords").addEventListener("input", handleKeywordChange);
+document.getElementById("noKeywords").addEventListener("input", handleKeywordChange);
+
+// Call loadInitialKeywords after the config is loaded
+loadInitialKeywords();
