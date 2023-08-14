@@ -42,14 +42,24 @@ function sanitizeHTML(htmlString) {
   return textContent;
 }
 
+
 function extractThumbnailFromDescription(description) {
   const imgTagRegex = /<img.*?src="(.*?)".*?>/i;
   const wpImageDivRegex = /<div class="wp-block-image">.*?<img.*?src="(.*?)".*?>.*?<\/div>/is;
 
   let match = description.match(imgTagRegex);
   if (match) {
-    return match[1].replace('http://', 'https://'); // Update the protocol to HTTPS
+    return match[1].replace('http://', 'https://');
   }
+
+  match = description.match(wpImageDivRegex);
+  if (match) {
+    return match[1].replace('http://', 'https://');
+  }
+
+  return '';
+}
+
 
   match = description.match(wpImageDivRegex);
   if (match) {
