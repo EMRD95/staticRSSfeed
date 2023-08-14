@@ -67,7 +67,6 @@ function truncateDescription(description) {
 
 
 
-
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
   const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = '0%';
@@ -89,7 +88,7 @@ function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
     });
   });
 
-Promise.allSettled(promises)
+  Promise.allSettled(promises)
     .then(results => {
       let articles = results.flatMap(result =>
         result.status === 'fulfilled' ? result.value.items : []
@@ -118,7 +117,6 @@ Promise.allSettled(promises)
     })
     .catch(error => console.error(error));
 }
-
 
   const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = '0%';
@@ -169,7 +167,7 @@ Promise.allSettled(promises)
       displayArticles(filteredArticles);
     })
     .catch(error => console.error(error));
-
+}
 
 function displayArticles(articles) {
   const articlesContainer = document.getElementById('articles');
