@@ -66,9 +66,10 @@ function truncateDescription(description) {
   return decodeHtmlEntities(description);
 }
 
+const progressBar = document.getElementById('progress-bar');
+const progressContainer = document.getElementById('progress-container');
+
 function fetchArticles(feedUrls, allKeywords, someKeywords, noKeywords) {
-    const progressBar = document.getElementById('progress-bar');
-    const progressContainer = document.getElementById('progress-container');  // Declare the progressContainer variable
     progressBar.style.width = '0%';
   
   allKeywords = allKeywords.map(keyword => keyword.toLowerCase());
@@ -246,6 +247,7 @@ async function loadKeywordsToInputFields() {
 
 // Event listener for 'applyChanges'
 document.getElementById('applyChanges').addEventListener('click', async () => {
+	progressContainer.style.display = 'block';
     let allKeywordsValue = document.getElementById('allKeywords').value;
     let someKeywordsValue = document.getElementById('someKeywords').value;
     let noKeywordsValue = document.getElementById('noKeywords').value;
@@ -263,7 +265,7 @@ document.getElementById('applyChanges').addEventListener('click', async () => {
 
 // Event listener for 'resetChanges'
 document.getElementById('resetChanges').addEventListener('click', async () => {
-
+	progressContainer.style.display = 'block';
     localStorage.removeItem('allKeywords');
     localStorage.removeItem('someKeywords');
     localStorage.removeItem('noKeywords');
@@ -273,6 +275,7 @@ document.getElementById('resetChanges').addEventListener('click', async () => {
 
 // Event listener for 'clearChanges'
 document.getElementById('clearChanges').addEventListener('click', async () => {
+	progressContainer.style.display = 'block';
     document.getElementById('allKeywords').value = "";
     document.getElementById('someKeywords').value = " ";
     document.getElementById('noKeywords').value = "";
