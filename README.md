@@ -52,6 +52,12 @@ To use this project, follow these simple steps:
 - It filters the fetched articles as per the keywords, presenting them in a friendly format.
 - Clicking on the article links redirects to the original source for full reading.
 
+## Supported Websites Integration
+The website supports a wide variety of RSS feeds from different platforms, enhancing content diversity. Here are some notable integrations:
+- **YouTube**: Fetches video content using RSS feed URLs.
+- **Google Alert**: Integrates with Google Alerts to fetch specific news or topics.
+- **Nitter**: Uses Nitter to retrieve specific tweets based on search queries.
+
 ## Contributing
 
 Your contributions are always welcome! If you wish to suggest enhancements, report bugs, or make general improvements, feel free to open an issue or submit a pull request on the [Static RSS Feed](https://github.com/EMRD95/staticRSSfeed) repository.
