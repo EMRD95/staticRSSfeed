@@ -282,3 +282,9 @@ overflow-wrap: break-word;
     background-color: #003580;
 }
 
+#article-counter {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 5px;
+	margin-bottom: 5px;
+}
