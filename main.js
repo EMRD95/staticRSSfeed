@@ -177,8 +177,33 @@ function displayArticles(articles) {
     const url = new URL(article.link);
     linkElement.textContent = url.hostname;
 
+// For Bing:
+const factCheckButtonBing = document.createElement('button');
+const bingIcon = document.createElement('img');
+bingIcon.src = 'bing-ico.ico';
+factCheckButtonBing.appendChild(bingIcon);
+factCheckButtonBing.classList.add('fact-check');
+factCheckButtonBing.onclick = () => {
+    const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
+    window.open(`https://www.bing.com/search?q=${query}`, '_blank');
+};
+
+// For Yandex:
+const factCheckButtonYandex = document.createElement('button');
+const yandexIcon = document.createElement('img');
+yandexIcon.src = 'yandex-ico.png';
+factCheckButtonYandex.appendChild(yandexIcon);
+factCheckButtonYandex.classList.add('fact-check');
+factCheckButtonYandex.onclick = () => {
+    const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
+    window.open(`https://yandex.com/search/?text=${query}`, '_blank');
+};
+
+	// For Google
     const factCheckButton = document.createElement('button');
-    factCheckButton.textContent = '🤔';
+const googleIcon = document.createElement('img');
+googleIcon.src = 'google-ico.ico';
+factCheckButton.appendChild(googleIcon);
 	factCheckButton.classList.add('fact-check'); // Add the new class
     factCheckButton.onclick = () => {
 	const query = encodeURIComponent(decodeHtmlEntities(sanitizedTitle));
@@ -192,7 +217,10 @@ function displayArticles(articles) {
     articleElement.appendChild(dateElement);
     articleElement.appendChild(descriptionElement);
     articleElement.appendChild(linkElement);
-    articleElement.appendChild(factCheckButton); // Add the fact check button to the article
+	articleElement.appendChild(factCheckButtonBing);
+	articleElement.appendChild(factCheckButtonYandex);
+	articleElement.appendChild(factCheckButton); // This is the Google button
+
 
     articlesContainer.appendChild(articleElement);
     // Update the article counter
@@ -293,5 +321,3 @@ document.getElementById('clearChanges').addEventListener('click', async () => {
     await loadKeywordsToInputFields();
     await loadConfig();
 })();
-
-

@@ -141,7 +141,7 @@ overflow-wrap: break-word;
   padding: 2px 2px; /* reduced padding to make the button smaller */
   border-radius: 4px;
   transition: background-color 0.3s ease;
-  margin-left: 10px; /* add some margin to the left to create space between the article link and the button */
+  margin-left: 5px; /* add some margin to the left to create space between the article link and the button */
 }
 
 .article .fact-check:hover {
@@ -287,4 +287,16 @@ overflow-wrap: break-word;
     font-size: 14px;
     margin-top: 5px;
 	margin-bottom: 5px;
+}
+
+.fact-check img {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    filter: grayscale(80%); /* Makes the image black and white */
+    transition: filter 0.3s; /* Smooth transition for hover effect */
+}
+
+.fact-check:hover img, .fact-check:active img {
+    filter: grayscale(0%); /* Reverts the image to its original colors on hover and click */
 }
