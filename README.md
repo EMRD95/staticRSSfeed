@@ -18,7 +18,7 @@ The default configuration is set to fetch AI and cybersecurity-related content. 
 
 To use this project, follow these simple steps:
 
-1. **Create an API Key**: Go to [rss2json](https://rss2json.com/) and create an account. During this process, you'll get an API key. Keep it safe - it's unique to your account.
+1. **Create an API Key**: Go to [rss2json](https://rss2json.com/) and create an account. During this process, you'll get an API key.
 
 2. **Set HTTP Referrer**: While still on the rss2json site, set the HTTP referrer to your domain name. This will ensure that your API key is only usable for requests from your domain.
 
@@ -30,17 +30,32 @@ To use this project, follow these simple steps:
     - Look for the `const apiKey = 'Your-API-Key-Here';` line and replace `'Your-API-Key-Here'` with the API key you got from rss2json, enclosed in single quotes. 
     - Scroll down and click on "Commit changes".
 
-5. **Locate the JSON Configuration File**: In your forked repository on GitHub, navigate to the `config.json` file.
+5. **Locate the JSON Configuration and Keywords File**: In your forked repository on GitHub, you'll need to navigate to two separate files:
+   - The `config.json` file, which contains the RSS feed URLs.
+   - The `keywords.json` file, which manages keyword filtering for the feed articles.
 
-6. **Edit the JSON Configuration File**: Click on the pencil icon (or "Edit this file") in the upper-right corner of the file view. You'll see several key-value pairs in the file:
+6. **Edit the JSON Configuration File**: 
+   - Click on the pencil icon (or "Edit this file") in the upper-right corner of the file view for `config.json`.
+   - Under the `"feedUrls"` key, you will find an array of the URLs for the RSS feeds. Replace the existing URLs with the ones for your desired feeds. Each URL should be enclosed in quotes and separated by commas. 
+     For example: 
+     ```json
+     "feedUrls": ["http://myfavoritesite.com/rss", "http://anothergreatsite.com/feed"]
+     ```
 
-   - `"feedUrls"`: This is an array of the URLs for the RSS feeds you want to include. Replace the existing URLs with the ones for your desired feeds, each enclosed in quotes and separated by commas. For example, you might change it to look something like this: `"feedUrls": ["http://myfavoritesite.com/rss", "http://anothergreatsite.com/feed"]`.
+7. **Edit the Keywords JSON File**:
+   - Navigate to the `keywords.json` file and click on the pencil icon to edit.
+   - Here you'll see several arrays corresponding to different keyword filters:
+     - `"allKeywords"`: Keywords that must all be present in an article for it to be included.
+     - `"someKeywords"`: At least one of these keywords must be present in an article for inclusion.
+     - `"noKeywords"`: Keywords that, if present, exclude an article from the feed.
+   - Update these arrays with your desired keywords for filtering.
 
-   - `"allKeywords"`, `"someKeywords"`, and `"noKeywords"`: These are arrays of keywords to filter the feed articles. "AllKeywords" are keywords that must all be present in an article for it to be included. "SomeKeywords" are keywords where at least one must be present. "NoKeywords" are keywords that, if present, exclude an article. Update these arrays with your desired keywords.
-
-   An example of modified keyword settings could be: `"allKeywords": ["AI", "OpenAI"]`, `"someKeywords": ["research", "GPT-4"]`, `"noKeywords": ["negative"]`.
-
-7. **Save Your Changes**: Once you're done editing, scroll down and click on "Commit changes".
+     An example of modified keyword settings could be:
+     ```json
+     "allKeywords": ["AI", "OpenAI"],
+     "someKeywords": ["research", "GPT-4"],
+     "noKeywords": ["negative"]
+     ```
 
 8. **Activate GitHub Pages**: Go back to the main page of your forked repository and click on the "Settings" tab. Scroll down to the "GitHub Pages" section. Select the "main" (or "master") branch under the "Source" dropdown and click "Save". GitHub will now automatically build and deploy your site.
 
