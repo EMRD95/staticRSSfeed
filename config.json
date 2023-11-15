@@ -150,6 +150,7 @@
 	"https://nitter.net/search/rss?f=tweets&q=cybersecurite+intelligence+artificielle",
 	"https://pubmed.ncbi.nlm.nih.gov/rss/search/1JKSd2KF3MGqV8nU7xElj-kHxwYM8pay9c8mJdEyfW8osuU1dj/?limit=50&utm_campaign=pubmed-2&fc=20230601103735",
         "https://news.ycombinator.com/rss",
+	"http://feeds.feedburner.com/HaveIBeenPwnedLatestBreaches",
 	"https://www.reseaucerta.org/rss-certa.xml"
     ]
 }
